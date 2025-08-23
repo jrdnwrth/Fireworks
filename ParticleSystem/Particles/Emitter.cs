@@ -1,3 +1,4 @@
+using ParticleSystem.Utils;
 using System;
 using System.Collections.Generic;
 
@@ -24,7 +25,13 @@ public class Emitter
     private readonly float _minParticleLifetime;
     private readonly float _maxParticleLifetime;
     private readonly float _randomVelocityMagnitude;
+    private readonly float _minParticleDrag; // New: minimum drag for particles
+    private readonly float _maxParticleDrag; // New: maximum drag for particles
     private readonly Random _random;
+    
+    // Box-Muller transform state
+    private bool _hasSpareNormal = false;
+    private float _spareNormal;
     
     public bool IsAlive => _lifetime > 0;
     public float PosX => _posX;
@@ -43,6 +50,7 @@ public class Emitter
         float randomVelocityMagnitude,
         int screenWidth, int screenHeight,
         float gravity = 200.0f, float drag = 0.999f,
+        float minParticleDrag = 0.8f, float maxParticleDrag = 0.9f, 
         int? randomSeed = null)
     {
         _posX = posX;
@@ -62,9 +70,13 @@ public class Emitter
         _minParticleLifetime = minParticleLifetime;
         _maxParticleLifetime = maxParticleLifetime;
         _randomVelocityMagnitude = randomVelocityMagnitude;
+        _minParticleDrag = minParticleDrag;
+        _maxParticleDrag = maxParticleDrag;
         
         _random = randomSeed.HasValue ? new Random(randomSeed.Value) : new Random();
     }
+    
+
     
     public void Update(float deltaTime)
     {
@@ -111,9 +123,13 @@ public class Emitter
             // Emit particles
             for (int i = 0; i < particleCount; i++)
             {
-                // Generate random velocity
+                // Generate random velocity using normal distribution
                 float randomAngle = (float)(_random.NextDouble() * 2.0 * Math.PI);
-                float randomSpeed = (float)(_random.NextDouble() * _randomVelocityMagnitude);
+                
+                // Use normal distribution for speed where _randomVelocityMagnitude is 2-sigma
+                // This means 95% of particles will have speed between 0 and _randomVelocityMagnitude
+                float randomSpeed = Math.Abs(MathUtils.NextGaussian(_random, ref _hasSpareNormal, ref _spareNormal) * (_randomVelocityMagnitude / 2.0f));
+                
                 float randomVelX = (float)(Math.Cos(randomAngle) * randomSpeed);
                 float randomVelY = (float)(Math.Sin(randomAngle) * randomSpeed);
                 
@@ -125,9 +141,13 @@ public class Emitter
                 float particleLifetime = _minParticleLifetime + 
                     (float)(_random.NextDouble() * (_maxParticleLifetime - _minParticleLifetime));
                 
-                // Create particle at emitter position with combined velocity
+                // Generate random drag within range
+                float particleDrag = _minParticleDrag + 
+                    (float)(_random.NextDouble() * (_maxParticleDrag - _minParticleDrag));
+                
+                // Create particle at emitter position with combined velocity and individual drag
                 var createdParticles = particleManager.CreateParticles(
-                    1, _posX, _posY, finalVelX, finalVelY, _particleColor, particleLifetime);
+                    1, _posX, _posY, finalVelX, finalVelY, _particleColor, particleLifetime, particleDrag);
                 
                 emittedParticles.AddRange(createdParticles);
             }

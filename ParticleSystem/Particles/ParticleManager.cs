@@ -11,11 +11,12 @@ public class ParticleManager
     private readonly float[] _velY;
     private readonly int[] _colorArgb;
     private readonly float[] _lifetime;
+    private readonly float[] _drag; // New array for individual drag values
     
     private readonly int _screenWidth;
     private readonly int _screenHeight;
     private readonly float _gravity;
-    private readonly float _drag;
+    private readonly float _defaultDrag; // Renamed for clarity
     
     public int ParticleCount { get; }
     
@@ -25,7 +26,7 @@ public class ParticleManager
         _screenWidth = screenWidth;
         _screenHeight = screenHeight;
         _gravity = gravity;
-        _drag = drag;
+        _defaultDrag = drag;
         
         _posX = new float[particleCount];
         _posY = new float[particleCount];
@@ -33,6 +34,7 @@ public class ParticleManager
         _velY = new float[particleCount];
         _colorArgb = new int[particleCount];
         _lifetime = new float[particleCount];
+        _drag = new float[particleCount]; // Initialize drag array
     }
     
     public void Update(float deltaTime)
@@ -46,10 +48,10 @@ public class ParticleManager
                 // Update lifetime
                 _lifetime[i] -= deltaTime;
                 
-                // Update physics
+                // Update physics using individual drag values
                 _velY[i] += gDt;
-                _velX[i] *= _drag;
-                _velY[i] *= _drag;
+                _velX[i] *= _drag[i];
+                _velY[i] *= _drag[i];
 
                 _posX[i] += _velX[i] * deltaTime;
                 _posY[i] += _velY[i] * deltaTime;
@@ -75,10 +77,13 @@ public class ParticleManager
         return index >= 0 && index < ParticleCount && _lifetime[index] > 0;
     }
     
-    public List<Particle> CreateParticles(int count, float posX, float posY, float velX, float velY, int colorArgb, float lifetime)
+    public List<Particle> CreateParticles(int count, float posX, float posY, float velX, float velY, int colorArgb, float lifetime, float drag = -1f)
     {
         var createdParticles = new List<Particle>();
         int created = 0;
+        
+        // Use default drag if not specified
+        float particleDrag = drag < 0 ? _defaultDrag : drag;
         
         for (int i = 0; i < ParticleCount && created < count; i++)
         {
@@ -90,6 +95,7 @@ public class ParticleManager
                 _velY[i] = velY;
                 _colorArgb[i] = colorArgb;
                 _lifetime[i] = lifetime;
+                _drag[i] = particleDrag; // Set individual drag value
                 
                 createdParticles.Add(new Particle(i));
                 created++;
