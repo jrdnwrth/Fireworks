@@ -50,7 +50,7 @@ public class Emitter
         float randomVelocityMagnitude,
         int screenWidth, int screenHeight,
         float gravity = 200.0f, float drag = 0.999f,
-        float minParticleDrag = 0.8f, float maxParticleDrag = 0.9f, 
+        float minParticleDrag = 0.8f, float maxParticleDrag = 0.93f, 
         int? randomSeed = null)
     {
         _posX = posX;
