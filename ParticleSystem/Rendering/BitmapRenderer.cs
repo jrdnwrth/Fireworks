@@ -1,3 +1,4 @@
+using ParticleSystem.Particles;
 using System;
 using System.Windows;
 using System.Windows.Media;
@@ -32,13 +33,13 @@ public unsafe class BitmapRenderer
         _backBuffer = new WriteableBitmap(screenWidth, screenHeight, 96, 96, PixelFormats.Pbgra32, null);
     }
     
-    public void DrawParticles(float[] posX, float[] posY, int[] colorArgb, int particleCount)
+    public void DrawParticles(float[] posX, float[] posY, int[] colorArgb, ParticleManager particleManager)
     {
         _backBuffer.Lock();
         try
         {
             ClearBuffer();
-            RenderParticles(posX, posY, colorArgb, particleCount);
+            RenderParticles(posX, posY, colorArgb, particleManager);
             _backBuffer.AddDirtyRect(new Int32Rect(0, 0, _screenWidth, _screenHeight));
         }
         finally
@@ -54,13 +55,17 @@ public unsafe class BitmapRenderer
         new Span<byte>((void*)_backBuffer.BackBuffer, totalBytes).Clear();
     }
     
-    private void RenderParticles(float[] posX, float[] posY, int[] colorArgb, int particleCount)
+    private void RenderParticles(float[] posX, float[] posY, int[] colorArgb, ParticleManager particleManager)
     {
         int stride = _backBuffer.BackBufferStride;
         byte* basePtr = (byte*)_backBuffer.BackBuffer;
 
-        for (int i = 0; i < particleCount; i++)
+        for (int i = 0; i < particleManager.ParticleCount; i++)
         {
+            // Only render particles that are alive
+            if (!particleManager.IsParticleAlive(i))
+                continue;
+                
             // Center the particle around the position
             int centerX = (int)posX[i] - 2; // Offset by 2 to center 5x5 grid
             int centerY = (int)posY[i] - 2;

@@ -2,20 +2,14 @@
 
 namespace ParticleSystem.Particles;
 
-public struct Particle
+public class Particle
 {
-    public float PosX;
-    public float PosY;
-    public float VelX;
-    public float VelY;
-    public int ColorArgb;
+    public int Index { get; }
     
-    public Particle(float posX, float posY, float velX, float velY, int colorArgb)
+    public Particle(int index)
     {
-        PosX = posX;
-        PosY = posY;
-        VelX = velX;
-        VelY = velY;
-        ColorArgb = colorArgb;
+        Index = index;
     }
 }
+
+
