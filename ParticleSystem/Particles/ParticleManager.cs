@@ -48,8 +48,8 @@ public class ParticleManager
             //int g = 160 + rng.Next(96);
             //int b = 160 + rng.Next(96);
             int r = 160 + rng.Next(96);
-            int g = 10;
-            int b = 10;
+            int g = 0;
+            int b = 0;
             _colorArgb[i] = unchecked((255 << 24) | (r << 16) | (g << 8) | b);
         }
     }

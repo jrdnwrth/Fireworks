@@ -107,11 +107,26 @@ public unsafe class BitmapRenderer
                     byte dstG = (byte)((dst >> 8) & 0xFF);
                     byte dstB = (byte)(dst & 0xFF);
 
-                    // Additive blend with clamping
+                    // Realistic overexposure blending - spill excess into other channels
+                    int totalR = glowR + dstR;
+                    int totalG = glowG + dstG;
+                    int totalB = glowB + dstB;
+                    
+                    // Calculate overflow amounts
+                    int overflowR = Math.Max(0, totalR - 255);
+                    int overflowG = Math.Max(0, totalG - 255);
+                    int overflowB = Math.Max(0, totalB - 255);
+                    
+                    // Distribute overflow to create white overexposure effect
+                    // Each overflow contributes to the other two channels
+                    totalG = Math.Min(255, totalG + (overflowR + overflowB) / 2);
+                    totalB = Math.Min(255, totalB + (overflowR + overflowG) / 2);
+                    totalR = Math.Min(255, totalR + (overflowG + overflowB) / 2);
+                    
                     byte outA = (byte)Math.Min(255 + dstA, 255);
-                    byte outR = (byte)Math.Min(glowR + dstR, 255);
-                    byte outG = (byte)Math.Min(glowG + dstG, 255);
-                    byte outB = (byte)Math.Min(glowB + dstB, 255);
+                    byte outR = (byte)totalR;
+                    byte outG = (byte)totalG;
+                    byte outB = (byte)totalB;
 
                     *pixelPtr = (outA << 24) | (outR << 16) | (outG << 8) | outB;
                 }
