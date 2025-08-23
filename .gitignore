@@ -1,0 +1,105 @@
+# Build results
+bin/
+obj/
+[Bb]uild/
+[Ll]og/
+*.log
+
+# Visual Studio user-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Visual Studio generated folders
+.vs/
+
+# Rider / JetBrains IDE
+.idea/
+*.iml
+
+# Build artifacts
+*.dll
+*.exe
+*.pdb
+*.cache
+*.tmp
+*.bak
+*.dbmdl
+*.dbproj.schemaview
+
+# NuGet
+*.nupkg
+*.snupkg
+*.nuget.props
+*.nuget.targets
+packages/
+*.lock.json
+*.deps.json
+
+# Publish output
+publish/
+out/
+
+# WPF specific
+*.g.i.cs
+*.baml
+*.xaml.cs
+
+# Debug and crash dumps
+*.vshost.*
+*.pidb
+*.sdf
+*.opensdf
+*.vsp
+*.vspscc
+*.psess
+*.vspx
+*.sap
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# Logs and temp
+*.tmp
+*.temp
+*.log
+*.trace
+*.nlog
+*.etl
+
+# Resharper & analysis
+_ReSharper*/
+*.DotSettings.user
+
+# Dotnet tools
+.dotnet/
+.nuget/
+global.json
+
+# Unsafe / custom native interop artifacts
+*.ilk
+*.idb
+*.exp
+*.lib
+*.iobj
+*.ipdb
+
+# Crash dumps
+*.dmp
+
+# Backup and archive
+*.zip
+*.7z
+*.tar
+*.gz
+
+# Environment and secrets
+.env
+.env.*
+*.key
+*.cert
+*.pfx
