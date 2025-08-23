@@ -44,9 +44,12 @@ public class ParticleManager
             _velX[i] = (float)((rng.NextDouble() - 0.5) * 200.0);
             _velY[i] = (float)(-(rng.NextDouble() * 200.0 + 50.0));
 
+            //int r = 160 + rng.Next(96);
+            //int g = 160 + rng.Next(96);
+            //int b = 160 + rng.Next(96);
             int r = 160 + rng.Next(96);
-            int g = 160 + rng.Next(96);
-            int b = 160 + rng.Next(96);
+            int g = 10;
+            int b = 10;
             _colorArgb[i] = unchecked((255 << 24) | (r << 16) | (g << 8) | b);
         }
     }
