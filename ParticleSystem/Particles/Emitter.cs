@@ -137,10 +137,12 @@ public class Emitter
                 float finalVelX = _velX + randomVelX;
                 float finalVelY = _velY + randomVelY;
                 
-                // Generate random lifetime within range
-                float particleLifetime = _minParticleLifetime + 
-                    (float)(_random.NextDouble() * (_maxParticleLifetime - _minParticleLifetime));
-                
+                // Generate random lifetime using Gaussian distribution
+                // Use normal distribution where _maxParticleLifetime is 2-sigma
+                // This means 95% of particles will have lifetime between _minParticleLifetime and (_minParticleLifetime + _maxParticleLifetime)
+                float randomLifetime = Math.Abs(MathUtils.NextGaussian(_random, ref _hasSpareNormal, ref _spareNormal) * (_maxParticleLifetime / 2.0f));
+                float particleLifetime = _minParticleLifetime + randomLifetime;
+
                 // Generate random drag within range
                 float particleDrag = _minParticleDrag + 
                     (float)(_random.NextDouble() * (_maxParticleDrag - _minParticleDrag));
