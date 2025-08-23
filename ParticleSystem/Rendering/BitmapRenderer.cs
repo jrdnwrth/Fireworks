@@ -26,7 +26,7 @@ public unsafe class BitmapRenderer
     
     public WriteableBitmap BackBuffer => _backBuffer;
     
-    public BitmapRenderer(int screenWidth, int screenHeight, int particleSize = 5)
+    public BitmapRenderer(int screenWidth, int screenHeight)
     {
         _screenWidth = screenWidth;
         _screenHeight = screenHeight;
