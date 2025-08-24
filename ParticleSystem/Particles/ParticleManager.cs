@@ -3,25 +3,26 @@ using System;
 
 namespace ParticleSystem.Particles
 {
-    public class ParticleManager
+    public static class ParticleManager
     {
-        private readonly float[] _posX;
-        private readonly float[] _posY;
-        private readonly float[] _velX;
-        private readonly float[] _velY;
-        private readonly int[] _colorArgb;
-        private readonly float[] _lifetime;
-        private readonly float[] _drag; // New array for individual drag values
-        private readonly OnCompleteCallback[] _callbacks; // Array to store particle callbacks
+        private static float[] _posX = null!;
+        private static float[] _posY = null!;
+        private static float[] _velX = null!;
+        private static float[] _velY = null!;
+        private static int[] _colorArgb = null!;
+        private static float[] _lifetime = null!;
+        private static float[] _drag = null!; // Array for individual drag values
+        private static OnCompleteCallback[] _callbacks = null!; // Array to store particle callbacks
         
-        private readonly int _screenWidth;
-        private readonly int _screenHeight;
-        private readonly float _gravity;
-        private readonly float _defaultDrag; // Renamed for clarity
+        private static int _screenWidth;
+        private static int _screenHeight;
+        private static float _gravity;
+        private static float _defaultDrag; // Renamed for clarity
         
-        public int ParticleCount { get; }
+        public static int ParticleCount { get; private set; }
+        public static bool IsInitialized { get; private set; }
         
-        public ParticleManager(int particleCount, int screenWidth, int screenHeight, float gravity = 200.0f, float drag = 0.9f)
+        public static void Initialize(int particleCount, int screenWidth, int screenHeight, float gravity = 200.0f, float drag = 0.9f)
         {
             ParticleCount = particleCount;
             _screenWidth = screenWidth;
@@ -37,10 +38,14 @@ namespace ParticleSystem.Particles
             _lifetime = new float[particleCount];
             _drag = new float[particleCount]; // Initialize drag array
             _callbacks = new OnCompleteCallback[particleCount]; // Initialize callback array
+            
+            IsInitialized = true;
         }
         
-        public void Update(float deltaTime)
+        public static void Update(float deltaTime)
         {
+            if (!IsInitialized) return;
+            
             float gDt = _gravity * deltaTime;
             for (int i = 0; i < ParticleCount; i++)
             {
@@ -55,7 +60,7 @@ namespace ParticleSystem.Particles
                     // Check if particle just died and invoke callback if available
                     if (previousLifetime > 0 && _lifetime[i] <= 0 && _callbacks[i] != null)
                     {
-                        _callbacks[i](_posX[i], _posY[i], _velX[i], _velY[i], this);
+                        _callbacks[i](_posX[i], _posY[i], _velX[i], _velY[i]);
                         _callbacks[i] = null; // Clear callback to prevent multiple invocations
                     }
                     
@@ -79,20 +84,22 @@ namespace ParticleSystem.Particles
             }
         }
         
-        public void GetParticleData(out float[] posX, out float[] posY, out int[] colorArgb)
+        public static void GetParticleData(out float[] posX, out float[] posY, out int[] colorArgb)
         {
             posX = _posX;
             posY = _posY;
             colorArgb = _colorArgb;
         }
         
-        public bool IsParticleAlive(int index)
+        public static bool IsParticleAlive(int index)
         {
-            return index >= 0 && index < ParticleCount && _lifetime[index] > 0;
+            return IsInitialized && index >= 0 && index < ParticleCount && _lifetime[index] > 0;
         }
         
-        public List<Particle> CreateParticles(int count, float posX, float posY, float velX, float velY, int colorArgb, float lifetime, float drag = -1f, OnCompleteCallback onComplete = null)
+        public static List<Particle> CreateParticles(int count, float posX, float posY, float velX, float velY, int colorArgb, float lifetime, float drag = -1f, OnCompleteCallback? onComplete = null)
         {
+            if (!IsInitialized) return new List<Particle>();
+            
             var createdParticles = new List<Particle>();
             int created = 0;
             
@@ -120,17 +127,19 @@ namespace ParticleSystem.Particles
             return createdParticles;
         }
         
-        public void DeleteParticle(Particle particle)
+        public static void DeleteParticle(Particle? particle)
         {
-            if (particle != null && particle.Index >= 0 && particle.Index < ParticleCount)
-            {
-                _lifetime[particle.Index] = 0;
-                _callbacks[particle.Index] = null; // Clear callback
-            }
+            if (!IsInitialized || particle == null || particle.Index < 0 || particle.Index >= ParticleCount)
+                return;
+                
+            _lifetime[particle.Index] = 0;
+            _callbacks[particle.Index] = null; // Clear callback
         }
         
-        public int GetAliveParticleCount()
+        public static int GetAliveParticleCount()
         {
+            if (!IsInitialized) return 0;
+            
             int count = 0;
             for (int i = 0; i < ParticleCount; i++)
             {
@@ -138,6 +147,17 @@ namespace ParticleSystem.Particles
                     count++;
             }
             return count;
+        }
+        
+        public static void Reset()
+        {
+            if (!IsInitialized) return;
+            
+            for (int i = 0; i < ParticleCount; i++)
+            {
+                _lifetime[i] = 0;
+                _callbacks[i] = null;
+            }
         }
     }
 }

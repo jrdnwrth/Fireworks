@@ -30,19 +30,18 @@ public static class EmitterManager
     /// Updates all active emitters and handles particle emission
     /// </summary>
     /// <param name="deltaTime">Time since last update</param>
-    /// <param name="particleManager">Particle manager to emit particles to</param>
-    public static void Update(float deltaTime, ParticleManager particleManager)
+    public static void Update(float deltaTime)
     {
         for (int i = 0; i < _emitters.Length; i++)
         {
             var emitter = _emitters[i];
             if (emitter == null) continue;
 
-            emitter.Update(deltaTime, particleManager);
+            emitter.Update(deltaTime);
             
             if (emitter.IsAlive)
             {
-                emitter.EmitParticles(particleManager);
+                emitter.EmitParticles();
             }
             else
             {

@@ -45,7 +45,7 @@ namespace ParticleSystem.Particles
         /// <summary>
         /// Callback function to invoke when the emitter completes its lifetime
         /// </summary>
-        public OnCompleteCallback OnComplete { get; set; }
+        public OnCompleteCallback? OnComplete { get; set; }
         
         public Emitter(
             float posX, float posY, 
@@ -60,7 +60,7 @@ namespace ParticleSystem.Particles
             float gravity = 200.0f, float drag = 0.999f,
             float minParticleDrag = 0.8f, float maxParticleDrag = 0.93f, 
             int? randomSeed = null,
-            OnCompleteCallback onComplete = null)
+            OnCompleteCallback? onComplete = null)
         {
             _posX = posX;
             _posY = posY;
@@ -86,7 +86,7 @@ namespace ParticleSystem.Particles
             OnComplete = onComplete;
         }
 
-        public void Update(float deltaTime, ParticleManager particleManager)
+        public void Update(float deltaTime)
         {
             if (!IsAlive) return;
             
@@ -100,7 +100,7 @@ namespace ParticleSystem.Particles
             if (previousLifetime > 0 && _lifetime <= 0 && !_callbackInvoked && OnComplete != null)
             {
                 _callbackInvoked = true;
-                OnComplete(_posX, _posY, _velX, _velY, particleManager);
+                OnComplete(_posX, _posY, _velX, _velY);
             }
             
             if (!IsAlive) return;
@@ -125,7 +125,7 @@ namespace ParticleSystem.Particles
             _emissionTimer += deltaTime;
         }
         
-        public List<Particle> EmitParticles(ParticleManager particleManager)
+        public List<Particle> EmitParticles()
         {
             if (!IsAlive) return new List<Particle>();
             
@@ -168,7 +168,7 @@ namespace ParticleSystem.Particles
                         (float)(_random.NextDouble() * (_maxParticleDrag - _minParticleDrag));
                     
                     // Create particle at emitter position with combined velocity and individual drag
-                    var createdParticles = particleManager.CreateParticles(
+                    var createdParticles = ParticleManager.CreateParticles(
                         1, _posX, _posY, finalVelX, finalVelY, _particleColor, particleLifetime, particleDrag);
                     
                     emittedParticles.AddRange(createdParticles);

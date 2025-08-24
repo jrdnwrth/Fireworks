@@ -33,13 +33,13 @@ public unsafe class BitmapRenderer
         _backBuffer = new WriteableBitmap(screenWidth, screenHeight, 96, 96, PixelFormats.Pbgra32, null);
     }
     
-    public void DrawParticles(float[] posX, float[] posY, int[] colorArgb, ParticleManager particleManager)
+    public void DrawParticles(float[] posX, float[] posY, int[] colorArgb)
     {
         _backBuffer.Lock();
         try
         {
             ClearBuffer();
-            RenderParticles(posX, posY, colorArgb, particleManager);
+            RenderParticles(posX, posY, colorArgb);
             _backBuffer.AddDirtyRect(new Int32Rect(0, 0, _screenWidth, _screenHeight));
         }
         finally
@@ -55,15 +55,15 @@ public unsafe class BitmapRenderer
         new Span<byte>((void*)_backBuffer.BackBuffer, totalBytes).Clear();
     }
     
-    private void RenderParticles(float[] posX, float[] posY, int[] colorArgb, ParticleManager particleManager)
+    private void RenderParticles(float[] posX, float[] posY, int[] colorArgb)
     {
         int stride = _backBuffer.BackBufferStride;
         byte* basePtr = (byte*)_backBuffer.BackBuffer;
 
-        for (int i = 0; i < particleManager.ParticleCount; i++)
+        for (int i = 0; i < ParticleManager.ParticleCount; i++)
         {
             // Only render particles that are alive
-            if (!particleManager.IsParticleAlive(i))
+            if (!ParticleManager.IsParticleAlive(i))
                 continue;
                 
             // Center the particle around the position
