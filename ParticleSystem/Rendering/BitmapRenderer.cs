@@ -96,6 +96,9 @@ public unsafe class BitmapRenderer
     
     private static int RoundToOddSize(float size)
     {
+        // Allow size 0 for invisible particles (strobe effects)
+        if (size <= 0) return 0;
+        
         // Round to nearest odd integer, clamped between 1 and 9
         int rounded = (int)Math.Round(size);
         if (rounded <= 1) return 1;
@@ -124,6 +127,11 @@ public unsafe class BitmapRenderer
             
             // Get particle size and round to odd integer
             int particleSize = RoundToOddSize(sizes[i]);
+            
+            // Skip rendering if particle size is 0 (invisible particle for strobe effects)
+            if (particleSize == 0)
+                continue;
+                
             float[,] glowIntensity = _glowIntensityArrays[particleSize];
             
             // Center the particle around the position
