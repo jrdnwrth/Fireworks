@@ -53,7 +53,7 @@ public static class ChainedFireworkConfigurations
                 velX: burstVelX,
                 velY: burstVelY,
                 lifetime: 1.3f,            // Medium lifetime for burst
-                emissionRate: 400f,
+                emissionRate: 200f,
                 particleColor: i % 2 == 0 ? FireworkColors.Gold : FireworkColors.Gold,
                 minParticleLifetime: 0.1f,
                 maxParticleLifetime: 1.0f,
@@ -83,8 +83,8 @@ public static class ChainedFireworkConfigurations
             emissionRate: 2500f,   // High emission rate for intense sparkle
             particleColor: FireworkColors.Gold,
             minParticleLifetime: 0.0f,
-            maxParticleLifetime: 0.5f,
-            randomVelocityMagnitude: 650f,
+            maxParticleLifetime: 0.7f,
+            randomVelocityMagnitude: 1050f,
             screenWidth: 1280,
             screenHeight: 720,
             minParticleDrag: 0.8f,

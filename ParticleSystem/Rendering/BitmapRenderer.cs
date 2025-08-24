@@ -1,5 +1,6 @@
 using ParticleSystem.Particles;
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -12,16 +13,51 @@ public unsafe class BitmapRenderer
     private readonly WriteableBitmap _backBuffer;
     private readonly int _screenWidth;
     private readonly int _screenHeight;
-    private const int _particleSize = 5; // Hard-coded to 5 pixels
     
-    // Pre-calculated glow intensity multipliers for 5x5 grid based on distance from center
-    private static readonly float[,] _glowIntensity = new float[5, 5]
+    // Glow intensity arrays for different particle sizes (1, 3, 5, 7, 9)
+    private static readonly Dictionary<int, float[,]> _glowIntensityArrays = new()
     {
-        { 0.05f, 0.10f, 0.15f, 0.10f, 0.05f },
-        { 0.10f, 0.25f, 0.45f, 0.25f, 0.10f },
-        { 0.15f, 0.45f, 1.0f, 0.45f, 0.15f },
-        { 0.10f, 0.25f, 0.45f, 0.25f, 0.10f },
-        { 0.05f, 0.10f, 0.15f, 0.10f, 0.05f }
+        [1] = new float[1, 1] { { 1.0f } },
+        
+        [3] = new float[3, 3]
+        {
+            { 0.25f, 0.45f, 0.25f },
+            { 0.45f, 1.0f, 0.45f },
+            { 0.25f, 0.45f, 0.25f }
+        },
+        
+        [5] = new float[5, 5]
+        {
+            { 0.51f, 0.31f, 0.51f, 0.31f, 0.21f },
+            { 0.31f, 0.99f, 0.99f, 0.70f, 0.31f },
+            { 0.51f, 0.99f, 1.0f, 0.99f, 0.51f },
+            { 0.31f, 0.70f, 0.99f, 0.99f, 0.31f },
+            { 0.21f, 0.31f, 0.51f, 0.31f, 0.51f }
+        },
+        
+        [7] = new float[7, 7]
+        {
+            { 0.30f, 0.20f, 0.30f, 0.40f, 0.30f, 0.20f, 0.10f },
+            { 0.20f, 0.60f, 0.60f, 0.70f, 0.60f, 0.35f, 0.20f },
+            { 0.30f, 0.60f, 0.99f, 1.00f, 0.99f, 0.60f, 0.30f },
+            { 0.40f, 0.70f, 1.00f, 1.00f, 1.00f, 0.70f, 0.40f },
+            { 0.30f, 0.60f, 0.99f, 1.00f, 0.99f, 0.60f, 0.30f },
+            { 0.20f, 0.35f, 0.60f, 0.70f, 0.60f, 0.60f, 0.20f },
+            { 0.10f, 0.20f, 0.30f, 0.40f, 0.30f, 0.20f, 0.30f }
+        },
+
+        [9] = new float[9, 9]
+        {
+            { 0.30f, 0.10f, 0.21f, 0.31f, 0.40f, 0.31f, 0.21f, 0.10f, 0.05f },
+            { 0.10f, 0.61f, 0.61f, 0.71f, 0.81f, 0.71f, 0.61f, 0.31f, 0.10f },
+            { 0.21f, 0.99f, 0.99f, 1.00f, 1.00f, 1.00f, 0.99f, 0.61f, 0.21f },
+            { 0.31f, 0.71f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 0.71f, 0.31f },
+            { 0.40f, 0.81f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 0.81f, 0.40f },
+            { 0.31f, 0.71f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 0.71f, 0.31f },
+            { 0.21f, 0.61f, 0.99f, 1.00f, 1.00f, 1.00f, 0.99f, 0.61f, 0.21f },
+            { 0.10f, 0.31f, 0.61f, 0.71f, 0.81f, 0.71f, 0.61f, 0.99f, 0.10f },
+            { 0.05f, 0.10f, 0.21f, 0.31f, 0.40f, 0.31f, 0.21f, 0.10f, 0.30f }
+        }
     };
     
     public WriteableBitmap BackBuffer => _backBuffer;
@@ -35,11 +71,14 @@ public unsafe class BitmapRenderer
     
     public void DrawParticles(float[] posX, float[] posY, int[] colorArgb)
     {
+        // Get particle data with sizes
+        ParticleManager.GetParticleData(out float[] x, out float[] y, out int[] colors, out float[] sizes);
+        
         _backBuffer.Lock();
         try
         {
             ClearBuffer();
-            RenderParticles(posX, posY, colorArgb);
+            RenderParticles(x, y, colors, sizes);
             _backBuffer.AddDirtyRect(new Int32Rect(0, 0, _screenWidth, _screenHeight));
         }
         finally
@@ -55,7 +94,24 @@ public unsafe class BitmapRenderer
         new Span<byte>((void*)_backBuffer.BackBuffer, totalBytes).Clear();
     }
     
-    private void RenderParticles(float[] posX, float[] posY, int[] colorArgb)
+    private static int RoundToOddSize(float size)
+    {
+        // Round to nearest odd integer, clamped between 1 and 9
+        int rounded = (int)Math.Round(size);
+        if (rounded <= 1) return 1;
+        if (rounded >= 9) return 9;
+        
+        // Make sure it's odd
+        if (rounded % 2 == 0)
+        {
+            // If even, round to nearest odd (prefer smaller for sizes < 5, larger for sizes >= 5)
+            return rounded < 5 ? rounded - 1 : rounded + 1;
+        }
+        
+        return rounded;
+    }
+    
+    private void RenderParticles(float[] posX, float[] posY, int[] colorArgb, float[] sizes)
     {
         int stride = _backBuffer.BackBufferStride;
         byte* basePtr = (byte*)_backBuffer.BackBuffer;
@@ -65,24 +121,29 @@ public unsafe class BitmapRenderer
             // Only render particles that are alive
             if (!ParticleManager.IsParticleAlive(i))
                 continue;
-                
+            
+            // Get particle size and round to odd integer
+            int particleSize = RoundToOddSize(sizes[i]);
+            float[,] glowIntensity = _glowIntensityArrays[particleSize];
+            
             // Center the particle around the position
-            int centerX = (int)posX[i] - 2; // Offset by 2 to center 5x5 grid
-            int centerY = (int)posY[i] - 2;
+            int halfSize = particleSize / 2;
+            int centerX = (int)posX[i] - halfSize;
+            int centerY = (int)posY[i] - halfSize;
             
             // Extract original particle color channels
             byte srcR = (byte)((colorArgb[i] >> 16) & 0xFF);
             byte srcG = (byte)((colorArgb[i] >> 8) & 0xFF);
             byte srcB = (byte)(colorArgb[i] & 0xFF);
 
-            // Draw 5x5 glow pattern
-            for (int dy = 0; dy < _particleSize; dy++)
+            // Draw particle with appropriate glow pattern
+            for (int dy = 0; dy < particleSize; dy++)
             {
                 int y = centerY + dy;
                 if ((uint)y >= (uint)_screenHeight) continue;
                 byte* row = basePtr + y * stride;
                 
-                for (int dx = 0; dx < _particleSize; dx++)
+                for (int dx = 0; dx < particleSize; dx++)
                 {
                     int x = centerX + dx;
                     if ((uint)x >= (uint)_screenWidth) continue;
@@ -90,11 +151,11 @@ public unsafe class BitmapRenderer
                     int* pixelPtr = (int*)(row + (x << 2));
                     int dst = *pixelPtr;
                     
-                    float intensity = _glowIntensity[dy, dx];
+                    float intensity = glowIntensity[dy, dx];
                     
-                    // For center pixel (2,2), use full white
+                    // For center pixel, use full white
                     byte glowR, glowG, glowB;
-                    if (dx == 2 && dy == 2)
+                    if (intensity >= 1.0f)
                     {
                         glowR = glowG = glowB = 255; // Full white center
                     }
