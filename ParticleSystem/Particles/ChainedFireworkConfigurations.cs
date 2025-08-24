@@ -1,4 +1,5 @@
-using ParticleSystem.Utils;
+﻿using ParticleSystem.Utils;
+using System;
 using System.Collections.Generic;
 
 namespace ParticleSystem.Particles;
@@ -17,8 +18,8 @@ public static class ChainedFireworkConfigurations
         var rocketEmitter = new Emitter(
             posX: 640f,                    // Center of screen horizontally
             posY: 600f,                    // Near bottom of screen
-            velX: 0f,                      // No horizontal velocity
-            velY: -450f,                   // Strong upward velocity
+            velX: -30f,                      // No horizontal velocity
+            velY: -400f,                   // Strong upward velocity
             lifetime: 1.5f,                // Short lifetime - just the rocket trail
             emissionRate: 150f,            // Emit trail particles
             particleColor: FireworkColors.Gold,
@@ -41,20 +42,21 @@ public static class ChainedFireworkConfigurations
     {
         for (int i = 0; i < 8; i++)
         {
-            float angle = (float)(i * System.Math.PI * 2 / 8); // 8 directions
-            float burstVelX = (float)(System.Math.Cos(angle) * 300f);
-            float burstVelY = (float)(System.Math.Sin(angle) * 300f);
+            var random = new Random();
+            float angle = (float)(random.NextDouble() * System.Math.PI * 2); // Random angle 0 to 2π
+            float burstVelX = (float)(System.Math.Cos(angle) * 100f) + velX;  // Inherit parent velocity
+            float burstVelY = (float)(System.Math.Sin(angle) * 100f) + velY;  // Inherit parent velocity
 
             var burstEmitter = new Emitter(
                 posX: posX,
                 posY: posY,
                 velX: burstVelX,
                 velY: burstVelY,
-                lifetime: 0.8f,            // Medium lifetime for burst
+                lifetime: 1.3f,            // Medium lifetime for burst
                 emissionRate: 400f,
-                particleColor: i % 2 == 0 ? FireworkColors.BrightRed : FireworkColors.BrightBlue,
-                minParticleLifetime: 0.5f,
-                maxParticleLifetime: 2.0f,
+                particleColor: i % 2 == 0 ? FireworkColors.Gold : FireworkColors.Gold,
+                minParticleLifetime: 0.1f,
+                maxParticleLifetime: 1.0f,
                 randomVelocityMagnitude: 100f,
                 screenWidth: 1280,         // You might want to pass these as parameters
                 screenHeight: 720,
@@ -75,14 +77,14 @@ public static class ChainedFireworkConfigurations
         var sparkleEmitter = new Emitter(
             posX: posX,
             posY: posY,
-            velX: velX * 0.2f,    // Inherit some of the parent velocity
-            velY: velY * 0.2f,
-            lifetime: 0.3f,       // Short sparkle burst
-            emissionRate: 800f,   // High emission rate for intense sparkle
+            velX: velX ,    // Inherit some of the parent velocity
+            velY: velY,
+            lifetime: 0.1f,       // Short sparkle burst
+            emissionRate: 2500f,   // High emission rate for intense sparkle
             particleColor: FireworkColors.Gold,
-            minParticleLifetime: 0.1f,
+            minParticleLifetime: 0.0f,
             maxParticleLifetime: 0.5f,
-            randomVelocityMagnitude: 150f,
+            randomVelocityMagnitude: 650f,
             screenWidth: 1280,
             screenHeight: 720,
             minParticleDrag: 0.8f,
@@ -90,46 +92,5 @@ public static class ChainedFireworkConfigurations
 
         // Add sparkle emitter to the global EmitterManager
         EmitterManager.AddEmitter(sparkleEmitter);
-    }
-
-    /// <summary>
-    /// Creates a simple two-stage firework for testing
-    /// </summary>
-    public static Emitter CreateSimpleChainedFirework(int screenWidth, int screenHeight, float startX)
-    {
-        return new Emitter(
-            posX: startX,
-            posY: 600f,
-            velX: 0f,
-            velY: -350f,
-            lifetime: 2f,
-            emissionRate: 100f,
-            particleColor: FireworkColors.Gold,
-            minParticleLifetime: 0.2f,
-            maxParticleLifetime: 0.6f,
-            randomVelocityMagnitude: 40f,
-            screenWidth: screenWidth,
-            screenHeight: screenHeight,
-            onComplete: (x, y, vx, vy) => CreateSimpleBurst(x, y, screenWidth, screenHeight));
-    }
-
-    private static void CreateSimpleBurst(float posX, float posY, int screenWidth, int screenHeight)
-    {
-        // Create a simple burst emitter and add it to the EmitterManager
-        var burstEmitter = new Emitter(
-            posX: posX,
-            posY: posY,
-            velX: 0f,
-            velY: 0f,
-            lifetime: 0.5f,
-            emissionRate: 1000f,
-            particleColor: FireworkColors.BrightRed,
-            minParticleLifetime: 0.3f,
-            maxParticleLifetime: 1.5f,
-            randomVelocityMagnitude: 200f,
-            screenWidth: screenWidth,
-            screenHeight: screenHeight);
-            
-        EmitterManager.AddEmitter(burstEmitter);
     }
 }
