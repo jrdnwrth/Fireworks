@@ -14,8 +14,6 @@ namespace ParticleSystem.Particles
         private float _emissionTimer;
         
         // Physics properties (similar to particles)
-        private readonly int _screenWidth;
-        private readonly int _screenHeight;
         private readonly float _gravity;
         private readonly float _drag;
         
@@ -69,8 +67,6 @@ namespace ParticleSystem.Particles
             _lifetime = lifetime;
             _emissionTimer = 0f;
             
-            _screenWidth = screenWidth;
-            _screenHeight = screenHeight;
             _gravity = gravity;
             _drag = drag;
             
@@ -114,12 +110,7 @@ namespace ParticleSystem.Particles
             _posX += _velX * deltaTime;
             _posY += _velY * deltaTime;
             
-            // Boundary collisions with damping
-            if (_posX < 0) { _posX = 0; _velX = -_velX * 0.8f; }
-            else if (_posX > _screenWidth - 1) { _posX = _screenWidth - 1; _velX = -_velX * 0.8f; }
-            
-            if (_posY < 0) { _posY = 0; _velY = -_velY * 0.8f; }
-            else if (_posY > _screenHeight - 1) { _posY = _screenHeight - 1; _velY = -_velY * 0.8f; }
+            if (_posY < 20) { _posY = 0; _velY = -_velY * 0.8f; }
             
             // Update emission timer
             _emissionTimer += deltaTime;

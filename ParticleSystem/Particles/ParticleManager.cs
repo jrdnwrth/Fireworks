@@ -11,6 +11,7 @@ namespace ParticleSystem.Particles
         private static float[] _velY = null!;
         private static int[] _colorArgb = null!;
         private static float[] _lifetime = null!;
+        private static float[] _initialLifetime = null!; // Track original lifetime for effect calculations
         private static float[] _drag = null!; // Array for individual drag values
         private static float[] _size = null!; // Array for individual particle sizes
         private static byte[] _type = null!; // Array for individual particle types
@@ -20,7 +21,7 @@ namespace ParticleSystem.Particles
         private static int _screenHeight;
         private static float _gravity;
         private static float _defaultDrag; // Renamed for clarity
-        private static float _defaultSize = 5.0f; // Default particle size
+        private static float _defaultSize = 9.0f; // Default particle size
         
         public static int ParticleCount { get; private set; }
         public static bool IsInitialized { get; private set; }
@@ -39,6 +40,7 @@ namespace ParticleSystem.Particles
             _velY = new float[particleCount];
             _colorArgb = new int[particleCount];
             _lifetime = new float[particleCount];
+            _initialLifetime = new float[particleCount]; // Initialize initial lifetime array
             _drag = new float[particleCount]; // Initialize drag array
             _size = new float[particleCount]; // Initialize size array
             _type = new byte[particleCount]; // Initialize type array
@@ -113,12 +115,25 @@ namespace ParticleSystem.Particles
             type = _type;
         }
         
+        /// <summary>
+        /// Gets the lifetime progress (0.0 to 1.0) for a particle where 1.0 means just born and 0.0 means about to die
+        /// </summary>
+        public static float GetParticleLifetimeProgress(int index)
+        {
+            if (!IsParticleAlive(index))
+                return 0.0f;
+                
+            return _lifetime[index] / _initialLifetime[index];
+        }
+        
         public static bool IsParticleAlive(int index)
         {
             return IsInitialized && index >= 0 && index < ParticleCount && _lifetime[index] > 0;
         }
         
-        public static List<Particle> CreateParticles(int count, float posX, float posY, float velX, float velY, int colorArgb, float lifetime, float drag = -1f, float size = -1f, ParticleType particleType = ParticleType.Decay, OnCompleteCallback? onComplete = null)
+        public static List<Particle> CreateParticles(int count, float posX, float posY, float velX, float velY, int colorArgb, 
+            float lifetime, float? drag = null, float? size = null, 
+            ParticleType particleType = ParticleType.Decay, OnCompleteCallback? onComplete = null)
         {
             if (!IsInitialized) return new List<Particle>();
             
@@ -126,9 +141,9 @@ namespace ParticleSystem.Particles
             int created = 0;
             
             // Use default drag if not specified
-            float particleDrag = drag < 0 ? _defaultDrag : drag;
+            float particleDrag = drag is null? _defaultDrag : drag.Value;
             // Use default size if not specified
-            float particleSize = size < 0 ? _defaultSize : size;
+            float particleSize = size is null? _defaultSize : size.Value;
             
             for (int i = 0; i < ParticleCount && created < count; i++)
             {
@@ -140,6 +155,7 @@ namespace ParticleSystem.Particles
                     _velY[i] = velY;
                     _colorArgb[i] = colorArgb;
                     _lifetime[i] = lifetime;
+                    _initialLifetime[i] = lifetime; // Store initial lifetime for effect calculations
                     _drag[i] = particleDrag; // Set individual drag value
                     _size[i] = particleSize; // Set individual size value
                     _type[i] = (byte)particleType; // Set individual particle type

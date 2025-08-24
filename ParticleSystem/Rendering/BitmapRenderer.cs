@@ -13,6 +13,7 @@ public unsafe class BitmapRenderer
     private readonly WriteableBitmap _backBuffer;
     private readonly int _screenWidth;
     private readonly int _screenHeight;
+    private readonly Random _random = new();
     
     // Glow intensity arrays for different particle sizes (1, 3, 5, 7, 9)
     private static readonly Dictionary<int, float[,]> _glowIntensityArrays = new()
@@ -71,14 +72,14 @@ public unsafe class BitmapRenderer
     
     public void DrawParticles(float[] posX, float[] posY, int[] colorArgb)
     {
-        // Get particle data with sizes
-        ParticleManager.GetParticleData(out float[] x, out float[] y, out int[] colors, out float[] sizes);
+        // Get particle data with sizes and types
+        ParticleManager.GetParticleData(out float[] x, out float[] y, out int[] colors, out float[] sizes, out byte[] types);
         
         _backBuffer.Lock();
         try
         {
             ClearBuffer();
-            RenderParticles(x, y, colors, sizes);
+            RenderParticles(x, y, colors, sizes, types);
             _backBuffer.AddDirtyRect(new Int32Rect(0, 0, _screenWidth, _screenHeight));
         }
         finally
@@ -114,7 +115,73 @@ public unsafe class BitmapRenderer
         return rounded;
     }
     
-    private void RenderParticles(float[] posX, float[] posY, int[] colorArgb, float[] sizes)
+    /// <summary>
+    /// Calculates the effective size for a particle based on its type and lifetime progress
+    /// </summary>
+    private float CalculateEffectiveSize(int particleIndex, float originalSize, ParticleType particleType)
+    {
+        // Get particle lifetime progress from ParticleManager
+        float lifetimeProgress = ParticleManager.GetParticleLifetimeProgress(particleIndex);
+        
+        return particleType switch
+        {
+            ParticleType.FixedSize => originalSize,
+            ParticleType.Decay => CalculateDecaySize(originalSize, lifetimeProgress),
+            ParticleType.Strobe => CalculateStrobeSize(originalSize, lifetimeProgress),
+            ParticleType.Flicker => CalculateFlickerSize(originalSize, lifetimeProgress),
+            ParticleType.Flash => CalculateFlashSize(originalSize, lifetimeProgress),
+            _ => originalSize
+        };
+    }
+    
+    private static float CalculateDecaySize(float originalSize, float lifetimeProgress)
+    {
+        // Decay: Standard particle that decreases size over its lifetime
+        // lifetimeProgress goes from 1.0 (birth) to 0.0 (death)
+        // We want size to decrease linearly with remaining lifetime
+        return originalSize * lifetimeProgress;
+    }
+    
+    private float CalculateStrobeSize(float originalSize, float lifetimeProgress)
+    {
+        // Strobe: Particle that oscillates between size 0 and its initial size
+        // Use sine wave for smooth oscillation, with higher frequency for more strobing
+        float strobeFrequency = 12.0f; // Oscillations over lifetime
+        float phase = (1.0f - lifetimeProgress) * strobeFrequency * MathF.PI * 2;
+        float strobeValue = (MathF.Sin(phase) + 1.0f) * 0.5f; // Normalize to 0-1
+        
+        return originalSize * strobeValue;
+    }
+    
+    private float CalculateFlickerSize(float originalSize, float lifetimeProgress)
+    {
+        // Flicker: Particle that flickers with random size variations above size 0
+        // Base size decreases with lifetime, but with random variations added
+        float baseSize = originalSize * lifetimeProgress * 0.4f; // Minimum size (40% of original)
+        float flickerAmount = originalSize * 0.6f; // Maximum additional size
+        float randomFactor = (float)_random.NextDouble();
+        
+        return baseSize + (flickerAmount * randomFactor);
+    }
+    
+    private float CalculateFlashSize(float originalSize, float lifetime)
+    {
+        // Flash: Particle that creates a bright flash effect at the very last 0.04 seconds of its life
+        const float flashThreshold = 0.04f; 
+
+        // lifetimeProgress goes from 1.0 (birth) to 0.0 (death)
+        if (lifetime <= flashThreshold)
+        {
+            // Create intense flash effect at the end
+            float randomSize = (float)_random.NextDouble() + 0.1f;
+            return originalSize * randomSize;
+        }
+        else
+            return 0;
+    }
+   
+    
+    private void RenderParticles(float[] posX, float[] posY, int[] colorArgb, float[] sizes, byte[] types)
     {
         int stride = _backBuffer.BackBufferStride;
         byte* basePtr = (byte*)_backBuffer.BackBuffer;
@@ -125,8 +192,12 @@ public unsafe class BitmapRenderer
             if (!ParticleManager.IsParticleAlive(i))
                 continue;
             
+            // Calculate effective size based on particle type
+            ParticleType particleType = (ParticleType)types[i];
+            float effectiveSize = CalculateEffectiveSize(i, sizes[i], particleType);
+            
             // Get particle size and round to odd integer
-            int particleSize = RoundToOddSize(sizes[i]);
+            int particleSize = RoundToOddSize(effectiveSize);
             
             // Skip rendering if particle size is 0 (invisible particle for strobe effects)
             if (particleSize == 0)
@@ -170,9 +241,9 @@ public unsafe class BitmapRenderer
                     else
                     {
                         // Apply glow intensity to original color
-                        glowR = (byte)(srcR * intensity);
-                        glowG = (byte)(srcG * intensity);
-                        glowB = (byte)(srcB * intensity);
+                        glowR = (byte)Math.Min(255, srcR * intensity);
+                        glowG = (byte)Math.Min(255, srcG * intensity);
+                        glowB = (byte)Math.Min(255, srcB * intensity);
                     }
                     
                     // Extract destination channels

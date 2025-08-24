@@ -16,11 +16,11 @@ public static class ChainedFireworkConfigurations
     {
         // Stage 1: Rocket trail emitter
         var rocketEmitter = new Emitter(
-            posX: 640f,                    // Center of screen horizontally
-            posY: 600f,                    // Near bottom of screen
-            velX: -30f,                      // No horizontal velocity
-            velY: -400f,                   // Strong upward velocity
-            lifetime: 1.5f,                // Short lifetime - just the rocket trail
+            posX: 350f,                    // Center of screen horizontally
+            posY: 800f,                    // Near bottom of screen
+            velX: 30f,                      // No horizontal velocity
+            velY: -500f,                   // Strong upward velocity
+            lifetime: 1.9f,                // Short lifetime - just the rocket trail
             emissionRate: 150f,            // Emit trail particles
             particleColor: FireworkColors.Gold,
             minParticleLifetime: 0.3f,
@@ -43,9 +43,9 @@ public static class ChainedFireworkConfigurations
         for (int i = 0; i < 8; i++)
         {
             var random = new Random();
-            float angle = (float)(random.NextDouble() * System.Math.PI * 2); // Random angle 0 to 2π
-            float burstVelX = (float)(System.Math.Cos(angle) * 100f) + velX;  // Inherit parent velocity
-            float burstVelY = (float)(System.Math.Sin(angle) * 100f) + velY;  // Inherit parent velocity
+            float angle = (float)(random.NextDouble() * Math.PI * 2); // Random angle 0 to 2π
+            float burstVelX = (float)(Math.Cos(angle) * 80f) + velX;  // Inherit parent velocity
+            float burstVelY = (float)(Math.Sin(angle) * 70f) + velY;  // Inherit parent velocity
 
             var burstEmitter = new Emitter(
                 posX: posX,

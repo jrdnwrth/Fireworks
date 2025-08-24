@@ -23,6 +23,11 @@ namespace ParticleSystem.Particles
         /// <summary>
         /// Particle that creates a bright flash effect at the very end of its life.
         /// </summary>
-        Flash = 3
+        Flash = 3,
+
+        /// <summary>
+        /// No change to particle size over its lifetime.
+        /// </summary>
+        FixedSize = 4
     }
 }
