@@ -20,17 +20,15 @@ public static class ChainedFireworkConfigurations
             posY: 800f,                    // Near bottom of screen
             velX: 30f,                      // No horizontal velocity
             velY: -500f,                   // Strong upward velocity
-            lifetime: 1.9f,                // Short lifetime - just the rocket trail
+            lifetime: 1.7f,                // Short lifetime - just the rocket trail
             emissionRate: 150f,            // Emit trail particles
             particleColor: FireworkColors.Gold,
-            minParticleLifetime: 0.3f,
+            minParticleLifetime: 0.6f,
             maxParticleLifetime: 0.8f,
             randomVelocityMagnitude: 50f,
-            screenWidth: screenWidth,
-            screenHeight: screenHeight,
             minParticleDrag: 0.85f,
             maxParticleDrag: 0.9f,
-            particleType: ParticleType.Decay,
+            particleType: ParticleType.Flicker,
             onComplete: CreateBurstExplosion);  // Chain to burst explosion
 
         EmitterManager.AddEmitter(rocketEmitter);
@@ -41,29 +39,27 @@ public static class ChainedFireworkConfigurations
     /// </summary>
     private static void CreateBurstExplosion(float posX, float posY, float velX, float velY)
     {
-        for (int i = 0; i < 8; i++)
+        for (int i = 0; i < 18; i++)
         {
             var random = new Random();
             float angle = (float)(random.NextDouble() * Math.PI * 2); // Random angle 0 to 2π
-            float burstVelX = (float)(Math.Cos(angle) * 80f) + velX;  // Inherit parent velocity
-            float burstVelY = (float)(Math.Sin(angle) * 70f) + velY;  // Inherit parent velocity
+            float burstVelX = (float)(Math.Cos(angle) * 160f * Math.Cos(random.NextDouble() * 32)) + velX;  // Inherit parent velocity
+            float burstVelY = (float)(Math.Sin(angle) * 140f * Math.Cos(random.NextDouble() * 32)) + velY;  // Inherit parent velocity
 
             var burstEmitter = new Emitter(
                 posX: posX,
                 posY: posY,
                 velX: burstVelX,
                 velY: burstVelY,
-                lifetime: 1.3f,            // Medium lifetime for burst
-                emissionRate: 200f,
-                particleColor: i % 2 == 0 ? FireworkColors.Gold : FireworkColors.Gold,
-                minParticleLifetime: 0.1f,
-                maxParticleLifetime: 1.0f,
+                lifetime: 1.0f,            // Medium lifetime for burst
+                emissionRate: 80f,
+                particleColor: FireworkColors.BrightBlue,
+                minParticleLifetime: 0.05f,
+                maxParticleLifetime: 0.2f,
                 randomVelocityMagnitude: 100f,
-                screenWidth: 1280,         // You might want to pass these as parameters
-                screenHeight: 720,
                 minParticleDrag: 0.75f,
                 maxParticleDrag: 0.85f,
-                particleType: ParticleType.Flicker,
+                particleType: ParticleType.Decay,
                 onComplete: CreateSparkleEffect);  // Chain to sparkle effects
 
             EmitterManager.AddEmitter(burstEmitter);
@@ -82,13 +78,11 @@ public static class ChainedFireworkConfigurations
             velX: velX ,    // Inherit some of the parent velocity
             velY: velY,
             lifetime: 0.1f,       // Short sparkle burst
-            emissionRate: 2500f,   // High emission rate for intense sparkle
+            emissionRate: 1000f,   // High emission rate for intense sparkle
             particleColor: FireworkColors.Gold,
             minParticleLifetime: 0.0f,
-            maxParticleLifetime: 0.7f,
-            randomVelocityMagnitude: 1050f,
-            screenWidth: 1280,
-            screenHeight: 720,
+            maxParticleLifetime: 0.5f,
+            randomVelocityMagnitude: 850f,
             minParticleDrag: 0.8f,
             maxParticleDrag: 0.9f,
             particleType: ParticleType.Flash);

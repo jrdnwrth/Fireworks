@@ -27,8 +27,6 @@ public static class EmitterConfigurations
             minParticleLifetime: 0.05f,     // Particles live 1-3 seconds
             maxParticleLifetime: 0.2f,
             randomVelocityMagnitude: 80f,  // Random velocity spread
-            screenWidth: screenWidth,
-            screenHeight: screenHeight,
             minParticleDrag: 0.85f,
             maxParticleDrag: 0.9f);
 
@@ -36,16 +34,14 @@ public static class EmitterConfigurations
         var upwardEmitter2 = new Emitter(
             posX: 600f,                    // Center of screen horizontally
             posY: 600f,                    // Near bottom of screen
-            velX: 20f,                      
+            velX: 20f,
             velY: -500f,                   // Strong upward velocity
             lifetime: 4.5f,                // Emitter lives for 3.5 seconds
             emissionRate: 300f,            // Emit 300 particles per second
             particleColor: FireworkColors.BrightBlue,     // Bright blue
             minParticleLifetime: 0.5f,     // Particles live 1-3 seconds
             maxParticleLifetime: 2.5f,
-            randomVelocityMagnitude: 160f,  // Random velocity spread
-            screenWidth: screenWidth,
-            screenHeight: screenHeight);
+            randomVelocityMagnitude: 160f);  // Random velocity spread
 
         // Create an upward-shooting green particle emitter
         var upwardEmitter3 = new Emitter(
@@ -58,9 +54,7 @@ public static class EmitterConfigurations
             particleColor: FireworkColors.BrightGreen,     // Bright green
             minParticleLifetime: 0.05f,     // Particles live 1-3 seconds
             maxParticleLifetime: 0.3f,
-            randomVelocityMagnitude: 900f,  // Random velocity spread
-            screenWidth: screenWidth,
-            screenHeight: screenHeight);
+            randomVelocityMagnitude: 900f);  // Random velocity spread
 
         // Create an upward-shooting gold particle emitter
         var upwardEmitter4 = new Emitter(
@@ -73,9 +67,7 @@ public static class EmitterConfigurations
             particleColor: FireworkColors.Gold,     // Gold
             minParticleLifetime: 0.05f,     // Particles live 1-3 seconds
             maxParticleLifetime: 0.5f,
-            randomVelocityMagnitude: 100f,  // Random velocity spread
-            screenWidth: screenWidth,
-            screenHeight: screenHeight);
+            randomVelocityMagnitude: 100f);  // Random velocity spread
 
         emitters.Add(upwardEmitter);
         emitters.Add(upwardEmitter2);

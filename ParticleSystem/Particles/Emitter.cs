@@ -55,7 +55,6 @@ namespace ParticleSystem.Particles
             float minParticleLifetime,
             float maxParticleLifetime,
             float randomVelocityMagnitude,
-            int screenWidth, int screenHeight,
             float gravity = 200.0f, float drag = 0.999f,
             float minParticleDrag = 0.8f, float maxParticleDrag = 0.93f, 
             ParticleType particleType = ParticleType.Decay,
