@@ -25,6 +25,7 @@ namespace ParticleSystem.Particles
         private readonly float _randomVelocityMagnitude;
         private readonly float _minParticleDrag; // New: minimum drag for particles
         private readonly float _maxParticleDrag; // New: maximum drag for particles
+        private readonly ParticleType _particleType; // New: type of particles to emit
         private readonly Random _random;
         
         // Box-Muller transform state
@@ -57,6 +58,7 @@ namespace ParticleSystem.Particles
             int screenWidth, int screenHeight,
             float gravity = 200.0f, float drag = 0.999f,
             float minParticleDrag = 0.8f, float maxParticleDrag = 0.93f, 
+            ParticleType particleType = ParticleType.Decay,
             int? randomSeed = null,
             OnCompleteCallback? onComplete = null)
         {
@@ -77,6 +79,7 @@ namespace ParticleSystem.Particles
             _randomVelocityMagnitude = randomVelocityMagnitude;
             _minParticleDrag = minParticleDrag;
             _maxParticleDrag = maxParticleDrag;
+            _particleType = particleType;
             
             _random = randomSeed.HasValue ? new Random(randomSeed.Value) : new Random();
             OnComplete = onComplete;
@@ -158,9 +161,10 @@ namespace ParticleSystem.Particles
                     float particleDrag = _minParticleDrag + 
                         (float)(_random.NextDouble() * (_maxParticleDrag - _minParticleDrag));
                     
-                    // Create particle at emitter position with combined velocity and individual drag
+                    // Create particle at emitter position with combined velocity, individual drag, and specified particle type
                     var createdParticles = ParticleManager.CreateParticles(
-                        1, _posX, _posY, finalVelX, finalVelY, _particleColor, particleLifetime, particleDrag);
+                        1, _posX, _posY, finalVelX, finalVelY, _particleColor, particleLifetime, particleDrag,
+                        size: null, _particleType);
                     
                     emittedParticles.AddRange(createdParticles);
                 }

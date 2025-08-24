@@ -30,6 +30,7 @@ public static class ChainedFireworkConfigurations
             screenHeight: screenHeight,
             minParticleDrag: 0.85f,
             maxParticleDrag: 0.9f,
+            particleType: ParticleType.Decay,
             onComplete: CreateBurstExplosion);  // Chain to burst explosion
 
         EmitterManager.AddEmitter(rocketEmitter);
@@ -62,6 +63,7 @@ public static class ChainedFireworkConfigurations
                 screenHeight: 720,
                 minParticleDrag: 0.75f,
                 maxParticleDrag: 0.85f,
+                particleType: ParticleType.Flicker,
                 onComplete: CreateSparkleEffect);  // Chain to sparkle effects
 
             EmitterManager.AddEmitter(burstEmitter);
@@ -88,7 +90,8 @@ public static class ChainedFireworkConfigurations
             screenWidth: 1280,
             screenHeight: 720,
             minParticleDrag: 0.8f,
-            maxParticleDrag: 0.9f);
+            maxParticleDrag: 0.9f,
+            particleType: ParticleType.Flash);
 
         // Add sparkle emitter to the global EmitterManager
         EmitterManager.AddEmitter(sparkleEmitter);
