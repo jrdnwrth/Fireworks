@@ -34,6 +34,10 @@ public static class ChainedFireworkConfigurations
         e.OnComplete = CreateBurstExplosion;  // Chain to burst explosion
     }
 
+    // TODO: Start creating presets from these nice effects.
+    // Then we can just call them, then assign a different OnComplete
+    // function to build new fireworks.
+
     /// <summary>
     /// Stage 2: Creates the main burst explosion at the rocket's final position
     /// </summary>
