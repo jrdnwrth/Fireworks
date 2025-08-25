@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using ParticleSystem.Utils;
+using static ParticleSystem.Utils.MathUtils;
 
 namespace ParticleSystem.Particles
 {
@@ -26,7 +27,6 @@ namespace ParticleSystem.Particles
         private readonly float _minParticleDrag; // New: minimum drag for particles
         private readonly float _maxParticleDrag; // New: maximum drag for particles
         private readonly ParticleType _particleType; // New: type of particles to emit
-        private readonly Random _random;
         
         // Box-Muller transform state
         private bool _hasSpareNormal = false;
@@ -58,7 +58,6 @@ namespace ParticleSystem.Particles
             float gravity = 200.0f, float drag = 0.999f,
             float minParticleDrag = 0.8f, float maxParticleDrag = 0.93f, 
             ParticleType particleType = ParticleType.Decay,
-            int? randomSeed = null,
             OnCompleteCallback? onComplete = null)
         {
             _posX = posX;
@@ -80,7 +79,6 @@ namespace ParticleSystem.Particles
             _maxParticleDrag = maxParticleDrag;
             _particleType = particleType;
             
-            _random = randomSeed.HasValue ? new Random(randomSeed.Value) : new Random();
             OnComplete = onComplete;
         }
 
@@ -137,11 +135,11 @@ namespace ParticleSystem.Particles
                 for (int i = 0; i < particleCount; i++)
                 {
                     // Generate random velocity using normal distribution
-                    float randomAngle = (float)(_random.NextDouble() * 2.0 * Math.PI);
+                    float randomAngle = (float)(random.NextDouble() * 2.0 * Math.PI);
                     
                     // Use normal distribution for speed where _randomVelocityMagnitude is 2-sigma
                     // This means 95% of particles will have speed between 0 and _randomVelocityMagnitude
-                    float randomSpeed = Math.Abs(MathUtils.NextGaussian(_random, ref _hasSpareNormal, ref _spareNormal) * (_randomVelocityMagnitude / 2.0f));
+                    float randomSpeed = Math.Abs(NextGaussian(ref _hasSpareNormal, ref _spareNormal) * (_randomVelocityMagnitude / 2.0f));
                     
                     float randomVelX = (float)(Math.Cos(randomAngle) * randomSpeed);
                     float randomVelY = (float)(Math.Sin(randomAngle) * randomSpeed);
@@ -153,12 +151,12 @@ namespace ParticleSystem.Particles
                     // Generate random lifetime using Gaussian distribution
                     // Use normal distribution where _maxParticleLifetime is 2-sigma
                     // This means 95% of particles will have lifetime between _minParticleLifetime and (_minParticleLifetime + _maxParticleLifetime)
-                    float randomLifetime = Math.Abs(MathUtils.NextGaussian(_random, ref _hasSpareNormal, ref _spareNormal) * (_maxParticleLifetime / 2.0f));
+                    float randomLifetime = Math.Abs(NextGaussian(ref _hasSpareNormal, ref _spareNormal) * (_maxParticleLifetime / 2.0f));
                     float particleLifetime = _minParticleLifetime + randomLifetime;
 
                     // Generate random drag within range
                     float particleDrag = _minParticleDrag + 
-                        (float)(_random.NextDouble() * (_maxParticleDrag - _minParticleDrag));
+                        (float)(random.NextDouble() * (_maxParticleDrag - _minParticleDrag));
                     
                     // Create particle at emitter position with combined velocity, individual drag, and specified particle type
                     var createdParticles = ParticleManager.CreateParticles(

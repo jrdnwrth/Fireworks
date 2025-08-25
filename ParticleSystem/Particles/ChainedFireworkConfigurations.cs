@@ -1,6 +1,6 @@
 ﻿using ParticleSystem.Utils;
 using System;
-using System.Collections.Generic;
+using static ParticleSystem.Utils.MathUtils;
 
 namespace ParticleSystem.Particles;
 
@@ -39,12 +39,14 @@ public static class ChainedFireworkConfigurations
     /// </summary>
     private static void CreateBurstExplosion(float posX, float posY, float velX, float velY)
     {
-        for (int i = 0; i < 18; i++)
+        int count = 20;
+        for (int i = 0; i < count; i++)
         {
-            var random = new Random();
-            float angle = (float)(random.NextDouble() * Math.PI * 2); // Random angle 0 to 2π
-            float burstVelX = (float)(Math.Cos(angle) * 160f * Math.Cos(random.NextDouble() * 32)) + velX;  // Inherit parent velocity
-            float burstVelY = (float)(Math.Sin(angle) * 140f * Math.Cos(random.NextDouble() * 32)) + velY;  // Inherit parent velocity
+            float angle = (float)(Math.PI * 2f / count * i); // Random angle 0 to 2π
+            var rand = random.NextDouble();
+            var circular_scaler = Math.Sqrt( 1 - rand * rand);
+            float burstVelX = (float)(Math.Cos(angle) * 160f * circular_scaler) + velX;  // Inherit parent velocity
+            float burstVelY = (float)(Math.Sin(angle) * 140f * circular_scaler) + velY;  // Inherit parent velocity
 
             var burstEmitter = new Emitter(
                 posX: posX,
@@ -52,7 +54,7 @@ public static class ChainedFireworkConfigurations
                 velX: burstVelX,
                 velY: burstVelY,
                 lifetime: 1.0f,            // Medium lifetime for burst
-                emissionRate: 80f,
+                emissionRate: 20f,
                 particleColor: FireworkColors.BrightBlue,
                 minParticleLifetime: 0.05f,
                 maxParticleLifetime: 0.2f,

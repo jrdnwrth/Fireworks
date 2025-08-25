@@ -4,11 +4,22 @@ namespace ParticleSystem.Utils;
 
 public static class MathUtils
 {
+    private static Random? _random = null;
+    public static Random random
+    {
+        get
+        {
+            if (_random is null)
+                _random = new Random();
+            return _random;
+        }
+    }
+
     /// <summary>
     /// Generates a normally distributed random number using the Box-Muller transform.
     /// Maintains state for spare normal value.
     /// </summary>
-    public static float NextGaussian(Random random, ref bool hasSpareNormal, ref float spareNormal)
+    public static float NextGaussian(ref bool hasSpareNormal, ref float spareNormal)
     {
         if (hasSpareNormal)
         {
@@ -26,10 +37,10 @@ public static class MathUtils
         }
         while (u1 <= float.Epsilon);
 
-        float magnitude = (float)(System.Math.Sqrt(-2.0 * System.Math.Log(u1)));
-        float angle = (float)(2.0 * System.Math.PI * u2);
+        float magnitude = (float)(Math.Sqrt(-2.0 * Math.Log(u1)));
+        float angle = (float)(2.0 * Math.PI * u2);
 
-        spareNormal = magnitude * (float)System.Math.Sin(angle);
-        return magnitude * (float)System.Math.Cos(angle);
+        spareNormal = magnitude * (float)Math.Sin(angle);
+        return magnitude * (float)Math.Cos(angle);
     }
 }

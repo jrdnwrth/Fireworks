@@ -4,7 +4,7 @@ namespace ParticleSystem.Particles;
 
 public static class EmitterManager
 {
-    private static readonly Emitter?[] _emitters = new Emitter?[10000];
+    private static readonly Emitter?[] _emitters = new Emitter?[5000];
 
     /// <summary>
     /// Adds an emitter to the global emitter array. Finds the next available slot
@@ -40,14 +40,7 @@ public static class EmitterManager
             emitter.Update(deltaTime);
             
             if (emitter.IsAlive)
-            {
                 emitter.EmitParticles();
-            }
-            else
-            {
-                // Clean up dead emitters
-                _emitters[i] = null;
-            }
         }
     }
 
