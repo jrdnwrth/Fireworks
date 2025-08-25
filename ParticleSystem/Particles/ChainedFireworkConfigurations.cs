@@ -16,27 +16,22 @@ public static class ChainedFireworkConfigurations
     {
         // Get an emitter from the pool instead of creating new one
         var e = EmitterManager.GetEmitter();
-        if (e != null)
-        {
-            // Set all the properties directly
-            e.PosX = 350f;                    // Center of screen horizontally
-            e.PosY = 800f;                    // Near bottom of screen
-            e.VelX = 30f;                     // No horizontal velocity
-            e.VelY = -500f;                   // Strong upward velocity
-            e.Lifetime = 1.7f;                // Short lifetime - just the rocket trail
-            e.EmissionTimer = 0f;
-            e.EmissionRate = 150f;            // Emit trail particles
-            e.ParticleColor = FireworkColors.Gold;
-            e.MinParticleLifetime = 0.6f;
-            e.MaxParticleLifetime = 0.8f;
-            e.RandomVelocityMagnitude = 50f;
-            e.MinParticleDrag = 0.85f;
-            e.MaxParticleDrag = 0.9f;
-            e.ParticleType = ParticleType.Flicker;
-            e.OnComplete = CreateBurstExplosion;  // Chain to burst explosion
-
-            // The emitter is already in the pool, no need to add it
-        }
+        // Set all the properties directly
+        e.PosX = 350f;                    // Center of screen horizontally
+        e.PosY = 800f;                    // Near bottom of screen
+        e.VelX = 30f;                     // No horizontal velocity
+        e.VelY = -500f;                   // Strong upward velocity
+        e.Lifetime = 1.7f;                // Short lifetime - just the rocket trail
+        e.EmissionTimer = 0f;
+        e.EmissionRate = 150f;            // Emit trail particles
+        e.ParticleColor = FireworkColors.Gold;
+        e.MinParticleLifetime = 0.6f;
+        e.MaxParticleLifetime = 0.8f;
+        e.RandomVelocityMagnitude = 50f;
+        e.MinParticleDrag = 0.85f;
+        e.MaxParticleDrag = 0.9f;
+        e.ParticleType = ParticleType.Flicker;
+        e.OnComplete = CreateBurstExplosion;  // Chain to burst explosion
     }
 
     /// <summary>
@@ -49,29 +44,26 @@ public static class ChainedFireworkConfigurations
         {
             float angle = (float)(Math.PI * 2f / count * i); // Random angle 0 to 2π
             var rand = random.NextDouble();
-            var circular_scaler = Math.Sqrt( 1 - rand * rand);
+            var circular_scaler = Math.Sqrt(1 - rand * rand);
             float burstVelX = (float)(Math.Cos(angle) * 160f * circular_scaler) + velX;  // Inherit parent velocity
             float burstVelY = (float)(Math.Sin(angle) * 140f * circular_scaler) + velY;  // Inherit parent velocity
 
             var e = EmitterManager.GetEmitter();
-            if (e != null)
-            {
-                e.PosX = posX;
-                e.PosY = posY;
-                e.VelX = burstVelX;
-                e.VelY = burstVelY;
-                e.Lifetime = 1.0f;            // Medium lifetime for burst
-                e.EmissionTimer = 0f;
-                e.EmissionRate = 30f;
-                e.ParticleColor = FireworkColors.BrightBlue;
-                e.MinParticleLifetime = 0.1f;
-                e.MaxParticleLifetime = 0.1f;
-                e.RandomVelocityMagnitude = 100f;
-                e.MinParticleDrag = 0.75f;
-                e.MaxParticleDrag = 0.85f;
-                e.ParticleType = ParticleType.Decay;
-                e.OnComplete = CreateSparkleEffect;  // Chain to sparkle effects
-            }
+            e.PosX = posX;
+            e.PosY = posY;
+            e.VelX = burstVelX;
+            e.VelY = burstVelY;
+            e.Lifetime = 1.0f;            // Medium lifetime for burst
+            e.EmissionTimer = 0f;
+            e.EmissionRate = 30f;
+            e.ParticleColor = FireworkColors.BrightBlue;
+            e.MinParticleLifetime = 0.1f;
+            e.MaxParticleLifetime = 0.1f;
+            e.RandomVelocityMagnitude = 100f;
+            e.MinParticleDrag = 0.75f;
+            e.MaxParticleDrag = 0.85f;
+            e.ParticleType = ParticleType.Decay;
+            e.OnComplete = CreateSparkleEffect;  // Chain to sparkle effects
         }
     }
 
@@ -82,22 +74,19 @@ public static class ChainedFireworkConfigurations
     {
         // Create a final sparkle burst
         var e = EmitterManager.GetEmitter();
-        if (e != null)
-        {
-            e.PosX = posX;
-            e.PosY = posY;
-            e.VelX = velX;    // Inherit some of the parent velocity
-            e.VelY = velY;
-            e.Lifetime = 0.1f;       // Short sparkle burst
-            e.EmissionTimer = 0f;
-            e.EmissionRate = 1000f;   // High emission rate for intense sparkle
-            e.ParticleColor = FireworkColors.Gold;
-            e.MinParticleLifetime = 0.0f;
-            e.MaxParticleLifetime = 0.5f;
-            e.RandomVelocityMagnitude = 850f;
-            e.MinParticleDrag = 0.8f;
-            e.MaxParticleDrag = 0.9f;
-            e.ParticleType = ParticleType.Flash;
-        }
+        e.PosX = posX;
+        e.PosY = posY;
+        e.VelX = velX;    // Inherit some of the parent velocity
+        e.VelY = velY;
+        e.Lifetime = 0.1f;       // Short sparkle burst
+        e.EmissionTimer = 0f;
+        e.EmissionRate = 1000f;   // High emission rate for intense sparkle
+        e.ParticleColor = FireworkColors.Gold;
+        e.MinParticleLifetime = 0.0f;
+        e.MaxParticleLifetime = 0.5f;
+        e.RandomVelocityMagnitude = 850f;
+        e.MinParticleDrag = 0.8f;
+        e.MaxParticleDrag = 0.9f;
+        e.ParticleType = ParticleType.Flash;
     }
 }

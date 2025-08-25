@@ -1,4 +1,5 @@
 using ParticleSystem.Particles;
+using System;
 
 namespace ParticleSystem.Particles;
 
@@ -27,7 +28,7 @@ public static class EmitterManager
     /// Gets the next available emitter from the pool
     /// </summary>
     /// <returns>An available emitter, or null if no emitters are available</returns>
-    public static Emitter? GetEmitter()
+    public static Emitter GetEmitter()
     {
         InitializePool();
         
@@ -36,11 +37,10 @@ public static class EmitterManager
             if (_emitters[i] != null && !_emitters[i]!.IsAlive)
             {
                 _emitters[i]!.Clear(); // Reset emitter properties before reuse
-                return _emitters[i];
+                return _emitters[i]!;
             }
         }
-        
-        return null; // No available emitter found
+        throw new Exception("No available emitter found");
     }
 
     /// <summary>
