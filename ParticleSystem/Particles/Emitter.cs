@@ -7,79 +7,66 @@ namespace ParticleSystem.Particles
 {
     public class Emitter
     {
-        private float _posX;
-        private float _posY;
-        private float _velX;
-        private float _velY;
-        private float _lifetime;
-        private float _emissionTimer;
+        public float PosX = 100f;
+        public float PosY = 100f;
+        public float VelX = 0f;
+        public float VelY = 0f;
+        public float Lifetime = 0f;
+        public float EmissionTimer = 0f;
         
-        // Physics properties (similar to particles)
-        private readonly float _gravity;
-        private readonly float _drag;
+        // Physics properties
+        public float Gravity = 200.0f;
+        public float Drag = 0.999f;
         
         // Emission properties
-        private readonly float _emissionRate; // Particles per second
-        private readonly int _particleColor;
-        private readonly float _minParticleLifetime;
-        private readonly float _maxParticleLifetime;
-        private readonly float _randomVelocityMagnitude;
-        private readonly float _minParticleDrag; // New: minimum drag for particles
-        private readonly float _maxParticleDrag; // New: maximum drag for particles
-        private readonly ParticleType _particleType; // New: type of particles to emit
+        public float EmissionRate = 100f; // Particles per second
+        public int ParticleColor = FireworkColors.Gold;
+        public float MinParticleLifetime = 0.1f;
+        public float MaxParticleLifetime = 1.0f;
+        public float RandomVelocityMagnitude = 40f;
+        public float MinParticleDrag = 0.8f;
+        public float MaxParticleDrag = 0.93f;
+        public ParticleType ParticleType = ParticleType.Decay;
         
         // Box-Muller transform state
-        private bool _hasSpareNormal = false;
-        private float _spareNormal;
+        public bool HasSpareNormal = false;
+        public float SpareNormal;
 
         // Callback for chaining effects
-        private bool _callbackInvoked = false;
+        public bool CallbackInvoked = false;
         
-        public bool IsAlive => _lifetime > 0;
-        public float PosX => _posX;
-        public float PosY => _posY;
-        public float VelX => _velX;
-        public float VelY => _velY;
+        public bool IsAlive => Lifetime > 0;
         
         /// <summary>
         /// Callback function to invoke when the emitter completes its lifetime
         /// </summary>
         public OnCompleteCallback? OnComplete { get; set; }
-        
-        public Emitter(
-            float posX, float posY, 
-            float velX, float velY, 
-            float lifetime,
-            float emissionRate,
-            int particleColor,
-            float minParticleLifetime,
-            float maxParticleLifetime,
-            float randomVelocityMagnitude,
-            float gravity = 200.0f, float drag = 0.999f,
-            float minParticleDrag = 0.8f, float maxParticleDrag = 0.93f, 
-            ParticleType particleType = ParticleType.Decay,
-            OnCompleteCallback? onComplete = null)
+
+        /// <summary>
+        /// This is called by the EmitterManager when reusing an emitter from the pool.
+        /// </summary>
+        public void Clear()
         {
-            _posX = posX;
-            _posY = posY;
-            _velX = velX;
-            _velY = velY;
-            _lifetime = lifetime;
-            _emissionTimer = 0f;
-            
-            _gravity = gravity;
-            _drag = drag;
-            
-            _emissionRate = emissionRate;
-            _particleColor = particleColor;
-            _minParticleLifetime = minParticleLifetime;
-            _maxParticleLifetime = maxParticleLifetime;
-            _randomVelocityMagnitude = randomVelocityMagnitude;
-            _minParticleDrag = minParticleDrag;
-            _maxParticleDrag = maxParticleDrag;
-            _particleType = particleType;
-            
-            OnComplete = onComplete;
+            PosX = 0;
+            PosY = 0;
+            VelX = 0;
+            VelY = 0;
+            Lifetime = 0;
+            EmissionTimer = 0;
+            Gravity = 200.0f;
+            Drag = 0.999f;
+            EmissionRate = 1f;
+            ParticleColor = FireworkColors.Gold;
+            MinParticleLifetime = 0.1f;
+            MaxParticleLifetime = 1f;
+            RandomVelocityMagnitude = 50f;
+            MinParticleDrag = 0.8f;
+            MaxParticleDrag = 0.93f;
+            ParticleType = ParticleType.Decay;
+            HasSpareNormal = false;
+            SpareNormal = 0f;
+            CallbackInvoked = false;
+            OnComplete = null;
         }
 
         public void Update(float deltaTime)
@@ -87,33 +74,33 @@ namespace ParticleSystem.Particles
             if (!IsAlive) return;
             
             // Store previous lifetime to detect when emitter dies
-            float previousLifetime = _lifetime;
+            float previousLifetime = Lifetime;
             
             // Update lifetime
-            _lifetime -= deltaTime;
+            Lifetime -= deltaTime;
             
             // Check if emitter just died and invoke callback if available
-            if (previousLifetime > 0 && _lifetime <= 0 && !_callbackInvoked && OnComplete != null)
+            if (previousLifetime > 0 && Lifetime <= 0 && !CallbackInvoked && OnComplete != null)
             {
-                _callbackInvoked = true;
-                OnComplete(_posX, _posY, _velX, _velY);
+                CallbackInvoked = true;
+                OnComplete(PosX, PosY, VelX, VelY);
             }
             
             if (!IsAlive) return;
             
             // Update physics (same as particles)
-            float gDt = _gravity * deltaTime;
-            _velY += gDt;
-            _velX *= _drag;
-            _velY *= _drag;
+            float gDt = Gravity * deltaTime;
+            VelY += gDt;
+            VelX *= Drag;
+            VelY *= Drag;
             
-            _posX += _velX * deltaTime;
-            _posY += _velY * deltaTime;
+            PosX += VelX * deltaTime;
+            PosY += VelY * deltaTime;
             
-            if (_posY < 20) { _posY = 0; _velY = -_velY * 0.8f; }
+            if (PosY < 20) { PosY = 0; VelY = -VelY * 0.8f; }
             
             // Update emission timer
-            _emissionTimer += deltaTime;
+            EmissionTimer += deltaTime;
         }
         
         public List<Particle> EmitParticles()
@@ -123,13 +110,13 @@ namespace ParticleSystem.Particles
             var emittedParticles = new List<Particle>();
             
             // Calculate how many particles to emit based on emission rate and elapsed time
-            float particlesToEmit = _emissionRate * _emissionTimer;
+            float particlesToEmit = EmissionRate * EmissionTimer;
             int particleCount = (int)particlesToEmit;
             
             if (particleCount > 0)
             {
                 // Reset timer, keeping the fractional part for next frame
-                _emissionTimer -= particleCount / _emissionRate;
+                EmissionTimer -= particleCount / EmissionRate;
                 
                 // Emit particles
                 for (int i = 0; i < particleCount; i++)
@@ -137,31 +124,31 @@ namespace ParticleSystem.Particles
                     // Generate random velocity using normal distribution
                     float randomAngle = (float)(random.NextDouble() * 2.0 * Math.PI);
                     
-                    // Use normal distribution for speed where _randomVelocityMagnitude is 2-sigma
-                    // This means 95% of particles will have speed between 0 and _randomVelocityMagnitude
-                    float randomSpeed = Math.Abs(NextGaussian(ref _hasSpareNormal, ref _spareNormal) * (_randomVelocityMagnitude / 2.0f));
+                    // Use normal distribution for speed where RandomVelocityMagnitude is 2-sigma
+                    // This means 95% of particles will have speed between 0 and RandomVelocityMagnitude
+                    float randomSpeed = Math.Abs(NextGaussian(ref HasSpareNormal, ref SpareNormal) * (RandomVelocityMagnitude / 2.0f));
                     
                     float randomVelX = (float)(Math.Cos(randomAngle) * randomSpeed);
                     float randomVelY = (float)(Math.Sin(randomAngle) * randomSpeed);
                     
                     // Combine emitter velocity with random velocity
-                    float finalVelX = _velX + randomVelX;
-                    float finalVelY = _velY + randomVelY;
+                    float finalVelX = VelX + randomVelX;
+                    float finalVelY = VelY + randomVelY;
                     
                     // Generate random lifetime using Gaussian distribution
-                    // Use normal distribution where _maxParticleLifetime is 2-sigma
-                    // This means 95% of particles will have lifetime between _minParticleLifetime and (_minParticleLifetime + _maxParticleLifetime)
-                    float randomLifetime = Math.Abs(NextGaussian(ref _hasSpareNormal, ref _spareNormal) * (_maxParticleLifetime / 2.0f));
-                    float particleLifetime = _minParticleLifetime + randomLifetime;
+                    // Use normal distribution where MaxParticleLifetime is 2-sigma
+                    // This means 95% of particles will have lifetime between MinParticleLifetime and (MinParticleLifetime + MaxParticleLifetime)
+                    float randomLifetime = Math.Abs(NextGaussian(ref HasSpareNormal, ref SpareNormal) * (MaxParticleLifetime / 2.0f));
+                    float particleLifetime = MinParticleLifetime + randomLifetime;
 
                     // Generate random drag within range
-                    float particleDrag = _minParticleDrag + 
-                        (float)(random.NextDouble() * (_maxParticleDrag - _minParticleDrag));
+                    float particleDrag = MinParticleDrag + 
+                        (float)(random.NextDouble() * (MaxParticleDrag - MinParticleDrag));
                     
                     // Create particle at emitter position with combined velocity, individual drag, and specified particle type
                     var createdParticles = ParticleManager.CreateParticles(
-                        1, _posX, _posY, finalVelX, finalVelY, _particleColor, particleLifetime, particleDrag,
-                        size: null, _particleType);
+                        1, PosX, PosY, finalVelX, finalVelY, ParticleColor, particleLifetime, particleDrag,
+                        size: null, ParticleType);
                     
                     emittedParticles.AddRange(createdParticles);
                 }
@@ -172,7 +159,7 @@ namespace ParticleSystem.Particles
         
         public void Kill()
         {
-            _lifetime = 0;
+            Lifetime = 0;
         }
     }
 }

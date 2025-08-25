@@ -14,24 +14,32 @@ public static class ChainedFireworkConfigurations
     /// </summary>
     public static void CreateChainedFirework(int screenWidth, int screenHeight)
     {
-        // Stage 1: Rocket trail emitter
-        var rocketEmitter = new Emitter(
-            posX: 350f,                    // Center of screen horizontally
-            posY: 800f,                    // Near bottom of screen
-            velX: 30f,                      // No horizontal velocity
-            velY: -500f,                   // Strong upward velocity
-            lifetime: 1.7f,                // Short lifetime - just the rocket trail
-            emissionRate: 150f,            // Emit trail particles
-            particleColor: FireworkColors.Gold,
-            minParticleLifetime: 0.6f,
-            maxParticleLifetime: 0.8f,
-            randomVelocityMagnitude: 50f,
-            minParticleDrag: 0.85f,
-            maxParticleDrag: 0.9f,
-            particleType: ParticleType.Flicker,
-            onComplete: CreateBurstExplosion);  // Chain to burst explosion
+        // Get an emitter from the pool instead of creating new one
+        var e = EmitterManager.GetEmitter();
+        if (e != null)
+        {
+            // Set all the properties directly
+            e.PosX = 350f;                    // Center of screen horizontally
+            e.PosY = 800f;                    // Near bottom of screen
+            e.VelX = 30f;                     // No horizontal velocity
+            e.VelY = -500f;                   // Strong upward velocity
+            e.Lifetime = 1.7f;                // Short lifetime - just the rocket trail
+            e.EmissionTimer = 0f;
+            e.EmissionRate = 150f;            // Emit trail particles
+            e.ParticleColor = FireworkColors.Gold;
+            e.MinParticleLifetime = 0.6f;
+            e.MaxParticleLifetime = 0.8f;
+            e.RandomVelocityMagnitude = 50f;
+            e.MinParticleDrag = 0.85f;
+            e.MaxParticleDrag = 0.9f;
+            e.ParticleType = ParticleType.Flicker;
+            e.OnComplete = CreateBurstExplosion;  // Chain to burst explosion
+            e.CallbackInvoked = false;
+            e.HasSpareNormal = false;
+            e.SpareNormal = 0f;
 
-        EmitterManager.AddEmitter(rocketEmitter);
+            // The emitter is already in the pool, no need to add it
+        }
     }
 
     /// <summary>
@@ -48,23 +56,28 @@ public static class ChainedFireworkConfigurations
             float burstVelX = (float)(Math.Cos(angle) * 160f * circular_scaler) + velX;  // Inherit parent velocity
             float burstVelY = (float)(Math.Sin(angle) * 140f * circular_scaler) + velY;  // Inherit parent velocity
 
-            var burstEmitter = new Emitter(
-                posX: posX,
-                posY: posY,
-                velX: burstVelX,
-                velY: burstVelY,
-                lifetime: 1.0f,            // Medium lifetime for burst
-                emissionRate: 20f,
-                particleColor: FireworkColors.BrightBlue,
-                minParticleLifetime: 0.05f,
-                maxParticleLifetime: 0.2f,
-                randomVelocityMagnitude: 100f,
-                minParticleDrag: 0.75f,
-                maxParticleDrag: 0.85f,
-                particleType: ParticleType.Decay,
-                onComplete: CreateSparkleEffect);  // Chain to sparkle effects
-
-            EmitterManager.AddEmitter(burstEmitter);
+            var e = EmitterManager.GetEmitter();
+            if (e != null)
+            {
+                e.PosX = posX;
+                e.PosY = posY;
+                e.VelX = burstVelX;
+                e.VelY = burstVelY;
+                e.Lifetime = 1.0f;            // Medium lifetime for burst
+                e.EmissionTimer = 0f;
+                e.EmissionRate = 20f;
+                e.ParticleColor = FireworkColors.BrightBlue;
+                e.MinParticleLifetime = 0.05f;
+                e.MaxParticleLifetime = 0.2f;
+                e.RandomVelocityMagnitude = 100f;
+                e.MinParticleDrag = 0.75f;
+                e.MaxParticleDrag = 0.85f;
+                e.ParticleType = ParticleType.Decay;
+                e.OnComplete = CreateSparkleEffect;  // Chain to sparkle effects
+                e.CallbackInvoked = false;
+                e.HasSpareNormal = false;
+                e.SpareNormal = 0f;
+            }
         }
     }
 
@@ -74,22 +87,26 @@ public static class ChainedFireworkConfigurations
     private static void CreateSparkleEffect(float posX, float posY, float velX, float velY)
     {
         // Create a final sparkle burst
-        var sparkleEmitter = new Emitter(
-            posX: posX,
-            posY: posY,
-            velX: velX ,    // Inherit some of the parent velocity
-            velY: velY,
-            lifetime: 0.1f,       // Short sparkle burst
-            emissionRate: 1000f,   // High emission rate for intense sparkle
-            particleColor: FireworkColors.Gold,
-            minParticleLifetime: 0.0f,
-            maxParticleLifetime: 0.5f,
-            randomVelocityMagnitude: 850f,
-            minParticleDrag: 0.8f,
-            maxParticleDrag: 0.9f,
-            particleType: ParticleType.Flash);
-
-        // Add sparkle emitter to the global EmitterManager
-        EmitterManager.AddEmitter(sparkleEmitter);
+        var e = EmitterManager.GetEmitter();
+        if (e != null)
+        {
+            e.PosX = posX;
+            e.PosY = posY;
+            e.VelX = velX;    // Inherit some of the parent velocity
+            e.VelY = velY;
+            e.Lifetime = 0.1f;       // Short sparkle burst
+            e.EmissionTimer = 0f;
+            e.EmissionRate = 1000f;   // High emission rate for intense sparkle
+            e.ParticleColor = FireworkColors.Gold;
+            e.MinParticleLifetime = 0.0f;
+            e.MaxParticleLifetime = 0.5f;
+            e.RandomVelocityMagnitude = 850f;
+            e.MinParticleDrag = 0.8f;
+            e.MaxParticleDrag = 0.9f;
+            e.ParticleType = ParticleType.Flash;
+            e.CallbackInvoked = false;
+            e.HasSpareNormal = false;
+            e.SpareNormal = 0f;
+        }
     }
 }
