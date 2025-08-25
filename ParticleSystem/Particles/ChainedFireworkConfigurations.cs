@@ -34,9 +34,6 @@ public static class ChainedFireworkConfigurations
             e.MaxParticleDrag = 0.9f;
             e.ParticleType = ParticleType.Flicker;
             e.OnComplete = CreateBurstExplosion;  // Chain to burst explosion
-            e.CallbackInvoked = false;
-            e.HasSpareNormal = false;
-            e.SpareNormal = 0f;
 
             // The emitter is already in the pool, no need to add it
         }
@@ -65,18 +62,15 @@ public static class ChainedFireworkConfigurations
                 e.VelY = burstVelY;
                 e.Lifetime = 1.0f;            // Medium lifetime for burst
                 e.EmissionTimer = 0f;
-                e.EmissionRate = 20f;
+                e.EmissionRate = 30f;
                 e.ParticleColor = FireworkColors.BrightBlue;
-                e.MinParticleLifetime = 0.05f;
-                e.MaxParticleLifetime = 0.2f;
+                e.MinParticleLifetime = 0.1f;
+                e.MaxParticleLifetime = 0.1f;
                 e.RandomVelocityMagnitude = 100f;
                 e.MinParticleDrag = 0.75f;
                 e.MaxParticleDrag = 0.85f;
                 e.ParticleType = ParticleType.Decay;
                 e.OnComplete = CreateSparkleEffect;  // Chain to sparkle effects
-                e.CallbackInvoked = false;
-                e.HasSpareNormal = false;
-                e.SpareNormal = 0f;
             }
         }
     }
@@ -104,9 +98,6 @@ public static class ChainedFireworkConfigurations
             e.MinParticleDrag = 0.8f;
             e.MaxParticleDrag = 0.9f;
             e.ParticleType = ParticleType.Flash;
-            e.CallbackInvoked = false;
-            e.HasSpareNormal = false;
-            e.SpareNormal = 0f;
         }
     }
 }
