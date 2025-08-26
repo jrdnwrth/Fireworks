@@ -13,7 +13,6 @@ public static class EmitterPresets
     public static void SparkleTrail(this Emitter e)
     {
         e.Lifetime = 1.7f;                // Short lifetime - just the rocket trail
-        e.EmissionTimer = 0f;
         e.EmissionRate = 150f;            // Emit trail particles
         e.ParticleColor = FireworkColors.Gold;
         e.MinParticleLifetime = 0.6f;
@@ -27,7 +26,6 @@ public static class EmitterPresets
     public static void GlitterPop(this Emitter e)
     {
         e.Lifetime = 0.1f;       // Short sparkle burst
-        e.EmissionTimer = 0f;
         e.EmissionRate = 1000f;   // High emission rate for intense sparkle
         e.ParticleColor = FireworkColors.Gold;
         e.MinParticleLifetime = 0.0f;
@@ -41,7 +39,6 @@ public static class EmitterPresets
     public static void Star_1(this Emitter e, int color)
     {
         e.Lifetime = 1.0f + random_float() * 0.2f;            // Medium lifetime for burst
-        e.EmissionTimer = 0f;
         e.EmissionRate = 30f;
         e.ParticleColor = color;
         e.MinParticleLifetime = 0.1f;

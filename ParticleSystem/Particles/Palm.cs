@@ -16,6 +16,7 @@ public static partial class Palm
         e.Vel = new Velocity(random_float(-60f, 60f), -530f + random_float(-60f, 60f));    // Slight horizontal, strong upward velocity
         e.SparkleTrail();                    // Apply preset for rocket trail
         e.EmissionRate = 50f;
+        e.initial_particle_size = 4f;
         e.ParticleType = ParticleType.Decay;
         e.Lifetime = random_float(1.7f, 2.0f);
         e.OnComplete = (pos, vel) => CreateBurstExplosion(pos, vel, color); // Chain to burst explosion
@@ -32,7 +33,7 @@ public static partial class Palm
             var e = EmitterManager.GetEmitter();
             e.Pos = pos;
             e.SetVelocity_RoundBurst(vel, i, total, 140f, 140f);
-            e.Lifetime = 1.7f;                // Short lifetime - just the rocket trail
+            e.Lifetime = random_float(1.0f, 1.7f);                // Short lifetime - just the rocket trail
             e.EmissionTimer = 0f;
             e.EmissionRate = 150f;            // Emit trail particles
             e.ParticleColor = color;
@@ -41,6 +42,7 @@ public static partial class Palm
             e.RandomVelocityMagnitude = 50f;
             e.MinParticleDrag = 0.85f;
             e.MaxParticleDrag = 0.9f;
+            e.ParticleType = ParticleType.Decay;
         }
     }
 

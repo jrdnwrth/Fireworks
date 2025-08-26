@@ -14,14 +14,13 @@ public partial class Particle_Window : Window
     private readonly System.Windows.Controls.Image _image;
     private readonly Stopwatch _stopwatch = new Stopwatch();
     private long _lastTicks;
+    const int width = 800;
+    const int height = 900;
+    const int particleCount = 50000;
 
     public Particle_Window()
     {
         InitializeComponent();
-
-        const int width = 800;
-        const int height = 900;
-        const int particleCount = 50000;
 
         InitializeWindow(width, height);
         
@@ -66,16 +65,17 @@ public partial class Particle_Window : Window
         if (dt > 0.05f) dt = 0.05f;
 
         // Update all emitters via EmitterManager
-        EmitterManager.Update(dt);
+        EmitterManager.Update(dt, height);
 
         // Check if there are no more alive emitters and create a new chained firework
         int activeEmitterCount = EmitterManager.GetActiveEmitterCount();
         if (activeEmitterCount == 0)
         {
             Chrysanthemum.Create(FireworkColors.BrightBlue, 250f);
-            Chrysanthemum.Create(FireworkColors.DeepRed, 400f);
-            Chrysanthemum.Create(FireworkColors.BrightGreen, 500f);
+            //Chrysanthemum.Create(FireworkColors.DeepRed, 400f);
+            //Chrysanthemum.Create(FireworkColors.BrightGreen, 500f);
             Palm.Create(FireworkColors.Gold, 450f);
+            Willow.Create(FireworkColors.Gold, 550f);
         }
 
         ParticleManager.Update(dt);

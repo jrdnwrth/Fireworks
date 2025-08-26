@@ -69,7 +69,7 @@ public static class EmitterManager
     /// Updates all active emitters and handles particle emission
     /// </summary>
     /// <param name="deltaTime">Time since last update</param>
-    public static void Update(float deltaTime)
+    public static void Update(float deltaTime, int window_height)
     {
         InitializePool();
         
@@ -78,7 +78,7 @@ public static class EmitterManager
             var emitter = _emitters[i];
             if (emitter == null) continue;
 
-            emitter.Update(deltaTime);
+            emitter.Update(deltaTime, window_height);
             
             if (emitter.IsAlive)
                 emitter.EmitParticles();
