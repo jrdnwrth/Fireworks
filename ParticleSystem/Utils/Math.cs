@@ -15,6 +15,9 @@ public static class MathUtils
         }
     }
 
+    public static float random_float() => random.NextSingle();
+    public static float random_float(float min, float max) => min + (random_float() * (max - min));
+
     /// <summary>
     /// Generates a normally distributed random number using the Box-Muller transform.
     /// Maintains state for spare normal value.

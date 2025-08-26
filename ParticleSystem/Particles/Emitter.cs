@@ -3,163 +3,162 @@ using System.Collections.Generic;
 using ParticleSystem.Utils;
 using static ParticleSystem.Utils.MathUtils;
 
-namespace ParticleSystem.Particles
+namespace ParticleSystem.Particles;
+
+public class Emitter
 {
-    public class Emitter
+    public float PosX = 100f;
+    public float PosY = 100f;
+    public float VelX = 0f;
+    public float VelY = 0f;
+    public float Lifetime = 0f;
+    public float EmissionTimer = 0f;
+    
+    // Physics properties
+    public float Gravity = 200.0f;
+    public float Drag = 0.999f;
+    
+    // Emission properties
+    public float EmissionRate = 100f; // Particles per second
+    public int ParticleColor = FireworkColors.Gold;
+    public float MinParticleLifetime = 0.1f;
+    public float MaxParticleLifetime = 1.0f;
+    public float RandomVelocityMagnitude = 40f;
+    public float MinParticleDrag = 0.8f;
+    public float MaxParticleDrag = 0.93f;
+    public ParticleType ParticleType = ParticleType.Decay;
+    
+    // Box-Muller transform state
+    public bool HasSpareNormal = false;
+    public float SpareNormal;
+
+    // Callback for chaining effects
+    public bool CallbackInvoked = false;
+    
+    public bool IsAlive => Lifetime > 0;
+    
+    /// <summary>
+    /// Callback function to invoke when the emitter completes its lifetime
+    /// </summary>
+    public OnCompleteCallback? OnComplete { get; set; }
+
+    /// <summary>
+    /// This is called by the EmitterManager when reusing an emitter from the pool.
+    /// </summary>
+    public void Clear()
     {
-        public float PosX = 100f;
-        public float PosY = 100f;
-        public float VelX = 0f;
-        public float VelY = 0f;
-        public float Lifetime = 0f;
-        public float EmissionTimer = 0f;
-        
-        // Physics properties
-        public float Gravity = 200.0f;
-        public float Drag = 0.999f;
-        
-        // Emission properties
-        public float EmissionRate = 100f; // Particles per second
-        public int ParticleColor = FireworkColors.Gold;
-        public float MinParticleLifetime = 0.1f;
-        public float MaxParticleLifetime = 1.0f;
-        public float RandomVelocityMagnitude = 40f;
-        public float MinParticleDrag = 0.8f;
-        public float MaxParticleDrag = 0.93f;
-        public ParticleType ParticleType = ParticleType.Decay;
-        
-        // Box-Muller transform state
-        public bool HasSpareNormal = false;
-        public float SpareNormal;
+        PosX = 0;
+        PosY = 0;
+        VelX = 0;
+        VelY = 0;
+        Lifetime = 0;
+        EmissionTimer = 0;
+        Gravity = 200.0f;
+        Drag = 0.999f;
+        EmissionRate = 1f;
+        ParticleColor = FireworkColors.Gold;
+        MinParticleLifetime = 0.1f;
+        MaxParticleLifetime = 1f;
+        RandomVelocityMagnitude = 50f;
+        MinParticleDrag = 0.8f;
+        MaxParticleDrag = 0.93f;
+        ParticleType = ParticleType.Decay;
+        HasSpareNormal = false;
+        SpareNormal = 0f;
+        CallbackInvoked = false;
+        OnComplete = null;
+    }
 
-        // Callback for chaining effects
-        public bool CallbackInvoked = false;
+    public void Update(float deltaTime)
+    {
+        if (!IsAlive) return;
         
-        public bool IsAlive => Lifetime > 0;
+        // Store previous lifetime to detect when emitter dies
+        float previousLifetime = Lifetime;
         
-        /// <summary>
-        /// Callback function to invoke when the emitter completes its lifetime
-        /// </summary>
-        public OnCompleteCallback? OnComplete { get; set; }
-
-        /// <summary>
-        /// This is called by the EmitterManager when reusing an emitter from the pool.
-        /// </summary>
-        public void Clear()
+        // Update lifetime
+        Lifetime -= deltaTime;
+        
+        // Check if emitter just died and invoke callback if available
+        if (previousLifetime > 0 && Lifetime <= 0 && !CallbackInvoked && OnComplete != null)
         {
-            PosX = 0;
-            PosY = 0;
-            VelX = 0;
-            VelY = 0;
-            Lifetime = 0;
-            EmissionTimer = 0;
-            Gravity = 200.0f;
-            Drag = 0.999f;
-            EmissionRate = 1f;
-            ParticleColor = FireworkColors.Gold;
-            MinParticleLifetime = 0.1f;
-            MaxParticleLifetime = 1f;
-            RandomVelocityMagnitude = 50f;
-            MinParticleDrag = 0.8f;
-            MaxParticleDrag = 0.93f;
-            ParticleType = ParticleType.Decay;
-            HasSpareNormal = false;
-            SpareNormal = 0f;
-            CallbackInvoked = false;
-            OnComplete = null;
-        }
-
-        public void Update(float deltaTime)
-        {
-            if (!IsAlive) return;
-            
-            // Store previous lifetime to detect when emitter dies
-            float previousLifetime = Lifetime;
-            
-            // Update lifetime
-            Lifetime -= deltaTime;
-            
-            // Check if emitter just died and invoke callback if available
-            if (previousLifetime > 0 && Lifetime <= 0 && !CallbackInvoked && OnComplete != null)
-            {
-                CallbackInvoked = true;
-                OnComplete(PosX, PosY, VelX, VelY);
-            }
-            
-            if (!IsAlive) return;
-            
-            // Update physics (same as particles)
-            float gDt = Gravity * deltaTime;
-            VelY += gDt;
-            VelX *= Drag;
-            VelY *= Drag;
-            
-            PosX += VelX * deltaTime;
-            PosY += VelY * deltaTime;
-            
-            if (PosY < 20) { PosY = 0; VelY = -VelY * 0.8f; }
-            
-            // Update emission timer
-            EmissionTimer += deltaTime;
+            CallbackInvoked = true;
+            OnComplete(PosX, PosY, VelX, VelY);
         }
         
-        public List<Particle> EmitParticles()
+        if (!IsAlive) return;
+        
+        // Update physics (same as particles)
+        float gDt = Gravity * deltaTime;
+        VelY += gDt;
+        VelX *= Drag;
+        VelY *= Drag;
+        
+        PosX += VelX * deltaTime;
+        PosY += VelY * deltaTime;
+        
+        if (PosY < 20) { PosY = 0; VelY = -VelY * 0.8f; }
+        
+        // Update emission timer
+        EmissionTimer += deltaTime;
+    }
+    
+    public List<Particle> EmitParticles()
+    {
+        if (!IsAlive) return new List<Particle>();
+        
+        var emittedParticles = new List<Particle>();
+        
+        // Calculate how many particles to emit based on emission rate and elapsed time
+        float particlesToEmit = EmissionRate * EmissionTimer;
+        int particleCount = (int)particlesToEmit;
+        
+        if (particleCount > 0)
         {
-            if (!IsAlive) return new List<Particle>();
+            // Reset timer, keeping the fractional part for next frame
+            EmissionTimer -= particleCount / EmissionRate;
             
-            var emittedParticles = new List<Particle>();
-            
-            // Calculate how many particles to emit based on emission rate and elapsed time
-            float particlesToEmit = EmissionRate * EmissionTimer;
-            int particleCount = (int)particlesToEmit;
-            
-            if (particleCount > 0)
+            // Emit particles
+            for (int i = 0; i < particleCount; i++)
             {
-                // Reset timer, keeping the fractional part for next frame
-                EmissionTimer -= particleCount / EmissionRate;
+                // Generate random velocity using normal distribution
+                float randomAngle = (float)(random.NextDouble() * 2.0 * Math.PI);
                 
-                // Emit particles
-                for (int i = 0; i < particleCount; i++)
-                {
-                    // Generate random velocity using normal distribution
-                    float randomAngle = (float)(random.NextDouble() * 2.0 * Math.PI);
-                    
-                    // Use normal distribution for speed where RandomVelocityMagnitude is 2-sigma
-                    // This means 95% of particles will have speed between 0 and RandomVelocityMagnitude
-                    float randomSpeed = Math.Abs(NextGaussian(ref HasSpareNormal, ref SpareNormal) * (RandomVelocityMagnitude / 2.0f));
-                    
-                    float randomVelX = (float)(Math.Cos(randomAngle) * randomSpeed);
-                    float randomVelY = (float)(Math.Sin(randomAngle) * randomSpeed);
-                    
-                    // Combine emitter velocity with random velocity
-                    float finalVelX = VelX + randomVelX;
-                    float finalVelY = VelY + randomVelY;
-                    
-                    // Generate random lifetime using Gaussian distribution
-                    // Use normal distribution where MaxParticleLifetime is 2-sigma
-                    // This means 95% of particles will have lifetime between MinParticleLifetime and (MinParticleLifetime + MaxParticleLifetime)
-                    float randomLifetime = Math.Abs(NextGaussian(ref HasSpareNormal, ref SpareNormal) * (MaxParticleLifetime / 2.0f));
-                    float particleLifetime = MinParticleLifetime + randomLifetime;
+                // Use normal distribution for speed where RandomVelocityMagnitude is 2-sigma
+                // This means 95% of particles will have speed between 0 and RandomVelocityMagnitude
+                float randomSpeed = Math.Abs(NextGaussian(ref HasSpareNormal, ref SpareNormal) * (RandomVelocityMagnitude / 2.0f));
+                
+                float randomVelX = (float)(Math.Cos(randomAngle) * randomSpeed);
+                float randomVelY = (float)(Math.Sin(randomAngle) * randomSpeed);
+                
+                // Combine emitter velocity with random velocity
+                float finalVelX = VelX + randomVelX;
+                float finalVelY = VelY + randomVelY;
+                
+                // Generate random lifetime using Gaussian distribution
+                // Use normal distribution where MaxParticleLifetime is 2-sigma
+                // This means 95% of particles will have lifetime between MinParticleLifetime and (MinParticleLifetime + MaxParticleLifetime)
+                float randomLifetime = Math.Abs(NextGaussian(ref HasSpareNormal, ref SpareNormal) * (MaxParticleLifetime / 2.0f));
+                float particleLifetime = MinParticleLifetime + randomLifetime;
 
-                    // Generate random drag within range
-                    float particleDrag = MinParticleDrag + 
-                        (float)(random.NextDouble() * (MaxParticleDrag - MinParticleDrag));
-                    
-                    // Create particle at emitter position with combined velocity, individual drag, and specified particle type
-                    var createdParticles = ParticleManager.CreateParticles(
-                        1, PosX, PosY, finalVelX, finalVelY, ParticleColor, particleLifetime, particleDrag,
-                        size: null, ParticleType);
-                    
-                    emittedParticles.AddRange(createdParticles);
-                }
+                // Generate random drag within range
+                float particleDrag = MinParticleDrag + 
+                    (float)(random.NextDouble() * (MaxParticleDrag - MinParticleDrag));
+                
+                // Create particle at emitter position with combined velocity, individual drag, and specified particle type
+                var createdParticles = ParticleManager.CreateParticles(
+                    1, PosX, PosY, finalVelX, finalVelY, ParticleColor, particleLifetime, particleDrag,
+                    size: null, ParticleType);
+                
+                emittedParticles.AddRange(createdParticles);
             }
-            
-            return emittedParticles;
         }
         
-        public void Kill()
-        {
-            Lifetime = 0;
-        }
+        return emittedParticles;
+    }
+    
+    public void Kill()
+    {
+        Lifetime = 0;
     }
 }

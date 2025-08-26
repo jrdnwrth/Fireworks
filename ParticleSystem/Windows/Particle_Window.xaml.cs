@@ -14,7 +14,6 @@ public partial class Particle_Window : Window
     private readonly System.Windows.Controls.Image _image;
     private readonly Stopwatch _stopwatch = new Stopwatch();
     private long _lastTicks;
-    private bool _hasCreatedNewFirework = false; // Track if we've created a new firework after emitters died
 
     public Particle_Window()
     {
@@ -37,14 +36,6 @@ public partial class Particle_Window : Window
             Stretch = Stretch.None 
         };
         Content = _image;
-
-        //// Load emitter configurations from the dedicated configuration file
-        //var emitters = EmitterConfigurations.CreateFireworkEmitters(width, height);
-        //foreach (var emitter in emitters)
-        //{
-        //    EmitterManager.AddEmitter(emitter);
-        //}
-        ChainedFireworkConfigurations.CreateChainedFirework(width, height);
 
         StartSimulation();
     }
@@ -79,15 +70,9 @@ public partial class Particle_Window : Window
 
         // Check if there are no more alive emitters and create a new chained firework
         int activeEmitterCount = EmitterManager.GetActiveEmitterCount();
-        if (activeEmitterCount == 0 && !_hasCreatedNewFirework)
+        if (activeEmitterCount == 0)
         {
-            ChainedFireworkConfigurations.CreateChainedFirework(800, 900);
-            _hasCreatedNewFirework = true;
-        }
-        else if (activeEmitterCount > 0)
-        {
-            // Reset the flag when emitters are active again
-            _hasCreatedNewFirework = false;
+            ChainedFireworkConfigurations.CreateChainedFirework();
         }
 
         ParticleManager.Update(dt);
