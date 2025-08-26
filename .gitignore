@@ -44,7 +44,6 @@ out/
 # WPF specific
 *.g.i.cs
 *.baml
-*.xaml.cs
 
 # Debug and crash dumps
 *.vshost.*
