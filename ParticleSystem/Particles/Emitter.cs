@@ -14,6 +14,19 @@ public class Emitter
     public float Lifetime = 0f;
     public float EmissionTimer = 0f;
     
+    // New tuple struct properties
+    public Position Pos 
+    { 
+        get => new(PosX, PosY); 
+        set { PosX = value.X; PosY = value.Y; } 
+    }
+    
+    public Velocity Vel 
+    { 
+        get => new(VelX, VelY); 
+        set { VelX = value.X; VelY = value.Y; } 
+    }
+    
     // Physics properties
     public float Gravity = 200.0f;
     public float Drag = 0.999f;
@@ -83,7 +96,7 @@ public class Emitter
         if (previousLifetime > 0 && Lifetime <= 0 && !CallbackInvoked && OnComplete != null)
         {
             CallbackInvoked = true;
-            OnComplete(PosX, PosY, VelX, VelY);
+            OnComplete(Pos, Vel);
         }
         
         if (!IsAlive) return;

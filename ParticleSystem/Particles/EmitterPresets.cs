@@ -80,14 +80,13 @@ public static class EmitterPresets
         e.ParticleType = ParticleType.Decay;
     }
 
-    public static void SetVelocity_RoundBurst(this Emitter e, float parent_velocity_x, float parent_velocity_y, int i, int total_count, float speedX, float speedY)
+    public static void SetVelocity_RoundBurst(this Emitter e, Velocity parentVel, int i, int total_count, float speedX, float speedY)
     {
         float angle = (float)(Math.PI * 2f / total_count * i); // Evenly spaced angles around circle
         var rand = random.NextDouble();
         var circular_scaler = Math.Sqrt(1 - rand * rand);
-        float burstVelX = (float)(Math.Cos(angle) * speedX * circular_scaler) + parent_velocity_x;  // Inherit parent velocity
-        float burstVelY = (float)(Math.Sin(angle) * speedY * circular_scaler) + parent_velocity_y;  // Inherit parent velocity
-        e.VelX = burstVelX;
-        e.VelY = burstVelY;
+        float burstVelX = (float)(Math.Cos(angle) * speedX * circular_scaler) + parentVel.X;  // Inherit parent velocity
+        float burstVelY = (float)(Math.Sin(angle) * speedY * circular_scaler) + parentVel.Y;  // Inherit parent velocity
+        e.Vel = new Velocity(burstVelX, burstVelY);
     }
 }

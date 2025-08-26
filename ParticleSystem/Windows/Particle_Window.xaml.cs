@@ -72,7 +72,10 @@ public partial class Particle_Window : Window
         int activeEmitterCount = EmitterManager.GetActiveEmitterCount();
         if (activeEmitterCount == 0)
         {
-            ChainedFireworkConfigurations.CreateChainedFirework();
+            Chrysanthemum.Create(FireworkColors.BrightBlue, 250f);
+            Chrysanthemum.Create(FireworkColors.DeepRed, 400f);
+            Chrysanthemum.Create(FireworkColors.BrightGreen, 500f);
+            Palm.Create(FireworkColors.Gold, 450f);
         }
 
         ParticleManager.Update(dt);

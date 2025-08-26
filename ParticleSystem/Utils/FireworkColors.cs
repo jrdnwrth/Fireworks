@@ -18,8 +18,8 @@ public static class FireworkColors
     public const int PurpleViolet = 0x8800FF;     // Purple violet - royal purple
     public const int Orange = 0xFF4400;           // Orange - sunset orange
     public const int HotPink = 0xFF0088;          // Hot pink - magenta pink
-    public const int White = 0xFFFFFF;            // White - brilliant white
-    public const int Silver = 0xC0C0C0;           // Silver - metallic silver
+    public const int White = 0xCCCCCC;            // White - brilliant white
+    public const int Silver = 0x666666;           // Silver - metallic silver
     public const int Copper = 0xBB4400;           // Copper - reddish copper
     
     // Specialty colors

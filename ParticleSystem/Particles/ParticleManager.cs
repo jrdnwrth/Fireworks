@@ -1,5 +1,6 @@
-using System.Collections.Generic;
+using ParticleSystem.Utils;
 using System;
+using System.Collections.Generic;
 
 namespace ParticleSystem.Particles
 {
@@ -67,7 +68,7 @@ namespace ParticleSystem.Particles
                     // Check if particle just died and invoke callback if available
                     if (previousLifetime > 0 && _lifetime[i] <= 0 && _callbacks[i] != null)
                     {
-                        _callbacks[i](_posX[i], _posY[i], _velX[i], _velY[i]);
+                        _callbacks[i](new Position(_posX[i], _posY[i]), new Velocity(_velX[i], _velY[i]));
                         _callbacks[i] = null; // Clear callback to prevent multiple invocations
                     }
                     
