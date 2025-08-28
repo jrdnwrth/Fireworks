@@ -60,17 +60,17 @@ public static class FireworkColors
     /// </summary>
     /// <param name="baseColor">The base color to find complements for</param>
     /// <returns>Array of complementary colors</returns>
-    public static int[] GetComplementaryColors(int baseColor)
-    {
-        return baseColor switch
-        {
-            BrightRed => [Gold, White, Silver],
-            BrightBlue => [White, Silver, ChampagneGold],
-            BrightGreen => [Gold, Copper, White],
-            Gold => [BrightRed, DeepRed, White],
-            PurpleViolet => [Gold, White, Silver],
-            Orange => [BrightBlue, White, ElectricBlue],
-            _ => [White, Silver, Gold]
-        };
-    }
+    //public static int[] GetComplementaryColors(int baseColor)
+    //{
+    //    return baseColor switch
+    //    {
+    //        BrightRed => [Gold, White, Silver],
+    //        BrightBlue => [White, Silver, ChampagneGold],
+    //        BrightGreen => [Gold, Copper, White],
+    //        Gold => [BrightRed, DeepRed, White],
+    //        PurpleViolet => [Gold, White, Silver],
+    //        Orange => [BrightBlue, White, ElectricBlue],
+    //        _ => [White, Silver, Gold]
+    //    };
+    //}
 }

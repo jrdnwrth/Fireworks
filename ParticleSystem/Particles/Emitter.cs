@@ -55,6 +55,7 @@ public class Emitter
     public bool decay_particle_size = false;
     public bool decay_emission = false;
     public float decay_particle_velocity_by = 0.0f;
+    public bool sphere_emitter = false;
 
     // Box-Muller transform state
     public bool HasSpareNormal = false;
@@ -95,6 +96,7 @@ public class Emitter
         decay_particle_size = false;
         decay_emission = false;
         decay_particle_velocity_by = 0.0f;
+        sphere_emitter = false;
         HasSpareNormal = false;
         SpareNormal = 0f;
         CallbackInvoked = false;
@@ -169,6 +171,46 @@ public class Emitter
         var adjusted_particle_size = initial_particle_size;
         if (decay_particle_size)
             adjusted_particle_size = initial_particle_size * lifetime_left;
+
+        // TODO: This is redundant.
+        // Sphere Emission
+        if (sphere_emitter)
+        {
+
+            foreach ((var x_unit, var y_unit) in generate_unit_sphere())
+            {
+                float randomSpeed = RandomVelocityMagnitude;
+
+                float randomVelX = (float)(x_unit * randomSpeed);
+                float randomVelY = (float)(y_unit * randomSpeed);
+
+                // Combine emitter velocity with random velocity
+                float finalVelX = VelX + randomVelX;
+                float finalVelY = VelY + randomVelY;
+
+                // Generate random lifetime using Gaussian distribution
+                // Use normal distribution where MaxParticleLifetime is 2-sigma
+                // This means 95% of particles will have lifetime between MinParticleLifetime and (MinParticleLifetime + MaxParticleLifetime)
+                //float randomLifetime = Math.Abs(NextGaussian(ref HasSpareNormal, ref SpareNormal) * (MaxParticleLifetime / 2.0f));
+                float randomLifetime = Math.Abs(NextGaussian(ref HasSpareNormal, ref SpareNormal) * (MaxParticleLifetime / 2.0f));
+                float particleLifetime = MinParticleLifetime + randomLifetime;
+
+                // Generate random drag within range
+                float particleDrag = MinParticleDrag +
+                    (float)(random.NextDouble() * (MaxParticleDrag - MinParticleDrag));
+
+                // Create particle at emitter position with combined velocity, individual drag, and specified particle type
+                var createdParticles = ParticleManager.CreateParticles(
+                    1, PosX, PosY, finalVelX, finalVelY, ParticleColor, particleLifetime, particleDrag,
+                    size: adjusted_particle_size, ParticleType);
+            }
+
+            // Expire the emitter.
+            initial_lifetime = 0f;
+            Lifetime = 0f;
+
+            return;
+        }
 
         // Emit particles
         for (int i = 0; i < particleCount; i++)
