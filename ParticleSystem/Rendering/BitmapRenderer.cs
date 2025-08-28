@@ -18,7 +18,7 @@ public unsafe class BitmapRenderer
     // Glow intensity arrays for different particle sizes (1, 3, 5, 7, 9)
     private static readonly Dictionary<int, float[,]> _glowIntensityArrays = new()
     {
-        [1] = new float[1, 1] { { 1.0f } },
+        [1] = new float[1, 1] { { 1.4f } },
         
         [3] = new float[3, 3]
         {
@@ -234,7 +234,7 @@ public unsafe class BitmapRenderer
                     
                     // For center pixel, use full white
                     byte glowR, glowG, glowB;
-                    if (intensity >= 1.0f)
+                    if (intensity == 1.0f)
                     {
                         glowR = glowG = glowB = 255; // Full white center
                     }

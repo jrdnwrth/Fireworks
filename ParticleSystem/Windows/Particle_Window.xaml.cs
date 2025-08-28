@@ -71,11 +71,13 @@ public partial class Particle_Window : Window
         int activeEmitterCount = EmitterManager.GetActiveEmitterCount();
         if (activeEmitterCount == 0)
         {
-            Chrysanthemum.Create(FireworkColors.BrightBlue, 250f);
-            //Chrysanthemum.Create(FireworkColors.DeepRed, 400f);
-            //Chrysanthemum.Create(FireworkColors.BrightGreen, 500f);
-            Palm.Create(FireworkColors.Gold, 450f);
-            Willow.Create(FireworkColors.Gold, 550f);
+            var ground = 870f;
+            //Willow.Create(FireworkColors.Gold, 250f, ground);
+            //Chrysanthemum.Create(FireworkColors.BrightBlue, 350f, ground);
+            //Chrysanthemum.Create(FireworkColors.DeepRed, 400f, ground);
+            //Chrysanthemum.Create(FireworkColors.BrightGreen, 500f, ground);
+            Palm.Create(FireworkColors.Gold, 450f, ground);
+
         }
 
         ParticleManager.Update(dt);

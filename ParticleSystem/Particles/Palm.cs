@@ -6,13 +6,13 @@ namespace ParticleSystem.Particles;
 
 public static partial class Palm
 {
-    public static void Create(int color, float xPos)
+    public static void Create(int color, float xPos, float yPos)
     {
         // Get an emitter from the pool instead of creating new one
         var e = EmitterManager.GetEmitter();
 
         // Set position and velocity using tuple structs
-        e.Pos = new Position(xPos, 800f);    // Center horizontally, near bottom
+        e.Pos = new Position(xPos, yPos);    // Center horizontally, near bottom
         e.Vel = new Velocity(random_float(-60f, 60f), -530f + random_float(-60f, 60f));    // Slight horizontal, strong upward velocity
         e.SparkleTrail();                    // Apply preset for rocket trail
         e.EmissionRate = 50f;

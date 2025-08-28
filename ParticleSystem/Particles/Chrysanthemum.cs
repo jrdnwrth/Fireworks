@@ -12,13 +12,13 @@ public static partial class Chrysanthemum
     /// Stage 2: Burst into multiple emitters at peak (main explosion)
     /// Stage 3: Secondary sparkle effects from each burst emitter
     /// </summary>
-    public static void Create(int color, float xPos)
+    public static void Create(int color, float xPos, float yPos)
     {
         // Get an emitter from the pool instead of creating new one
         var e = EmitterManager.GetEmitter();
 
         // Set position and velocity using tuple structs
-        e.Pos = new Position(xPos, 800f);    // Center horizontally, near bottom
+        e.Pos = new Position(xPos, yPos);    // Center horizontally, near bottom
         e.Vel = new Velocity(random_float(-60f, 60f), -500f + random_float(-60f, 60f));    // Slight horizontal, strong upward velocity
         e.SparkleTrail();                    // Apply preset for rocket trail
         e.Lifetime = random_float(1.7f, 2.5f);
