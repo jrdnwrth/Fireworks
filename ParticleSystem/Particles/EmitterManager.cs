@@ -78,10 +78,13 @@ public static class EmitterManager
             var emitter = _emitters[i];
             if (emitter == null) continue;
 
-            emitter.Update(deltaTime, window_height);
-            
+
+
             if (emitter.IsAlive)
+            {
+                emitter.Update(deltaTime, window_height);
                 emitter.EmitParticles();
+            }
         }
     }
 

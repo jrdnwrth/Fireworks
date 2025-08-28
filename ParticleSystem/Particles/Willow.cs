@@ -6,7 +6,7 @@ namespace ParticleSystem.Particles;
 
 public static partial class Willow
 {
-    public static void Create(int color, float xPos, float yPos)
+    public static void Create(int color, float xPos, float yPos, bool flicker)
     {
         // Get an emitter from the pool instead of creating new one
         var e = EmitterManager.GetEmitter();
@@ -19,13 +19,13 @@ public static partial class Willow
         e.initial_particle_size = 6f;
         e.ParticleType = ParticleType.Flicker;
         e.Lifetime = random_float(1.7f, 2.0f);
-        e.OnComplete = (pos, vel) => CreateBurstExplosion(pos, vel, color); // Chain to burst explosion
+        e.OnComplete = (pos, vel) => CreateBurstExplosion(pos, vel, color, flicker); // Chain to burst explosion
     }
 
     /// <summary>
     /// Stage 2: Creates the main burst explosion at the rocket's final position
     /// </summary>
-    private static void CreateBurstExplosion(Position pos, Velocity vel, int color)
+    private static void CreateBurstExplosion(Position pos, Velocity vel, int color, bool flicker)
     {
         int total = (int)(random_float(70, 90));
         for (int i = 0; i < total; i++)
@@ -42,8 +42,16 @@ public static partial class Willow
             e.RandomVelocityMagnitude = 50f;
             e.MinParticleDrag = 0.85f;
             e.MaxParticleDrag = 0.9f;
-            e.initial_particle_size = 3;
-            e.ParticleType = ParticleType.Decay;
+            if (flicker)
+            {
+                e.initial_particle_size = 6;
+                e.ParticleType = ParticleType.Flicker;
+            }
+            else
+            {
+                e.initial_particle_size = 4;
+                e.ParticleType = ParticleType.Decay;
+            }
         }
     }
 }

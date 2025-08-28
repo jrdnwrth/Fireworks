@@ -56,7 +56,7 @@ public partial class Particle_Window : Window
         _stopwatch.Start();
         _lastTicks = _stopwatch.ElapsedTicks;
     }
-
+    bool toggle = false;
     private void OnRender(object? sender, EventArgs e)
     {
         long now = _stopwatch.ElapsedTicks;
@@ -72,11 +72,13 @@ public partial class Particle_Window : Window
         if (activeEmitterCount == 0)
         {
             var ground = 870f;
-            //Willow.Create(FireworkColors.Gold, 250f, ground);
+            
+            //Willow.Create(FireworkColors.Gold, 250f, ground, toggle);
             //Chrysanthemum.Create(FireworkColors.BrightBlue, 350f, ground);
             //Chrysanthemum.Create(FireworkColors.DeepRed, 400f, ground);
             //Chrysanthemum.Create(FireworkColors.BrightGreen, 500f, ground);
             Palm.Create(FireworkColors.Gold, 450f, ground);
+            toggle = !toggle;
 
         }
 

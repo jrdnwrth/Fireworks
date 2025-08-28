@@ -41,6 +41,8 @@ public class Emitter
     public float MinParticleDrag = 0.8f;
     public float MaxParticleDrag = 0.93f;
     public ParticleType ParticleType = ParticleType.Decay;
+    public bool decay_particle_size = false;
+    public bool decay_emission = false;
 
     // Box-Muller transform state
     public bool HasSpareNormal = false;
@@ -112,68 +114,62 @@ public class Emitter
         PosX += VelX * deltaTime;
         PosY += VelY * deltaTime;
 
-        if (PosY > window_height - 20)
-        {
-            PosY = 20;
-            VelY = -VelY * 0.8f;
-        }
+        //if (PosY > window_height - 20)
+        //{
+        //    PosY = window_height - 20;
+        //    VelY = -VelY * 0.8f;
+        //}
 
         // Update emission timer
         EmissionTimer += deltaTime;
     }
 
-    public List<Particle> EmitParticles()
+    public void EmitParticles()
     {
-        if (!IsAlive) return new List<Particle>();
-
-        var emittedParticles = new List<Particle>();
+        if (!IsAlive) return;
 
         // Calculate how many particles to emit based on emission rate and elapsed time
         float particlesToEmit = EmissionRate * EmissionTimer;
         int particleCount = (int)particlesToEmit;
 
-        if (particleCount > 0)
+        if (particleCount <= 0)
+            return;
+
+        // Reset timer, keeping the fractional part for next frame
+        EmissionTimer -= particleCount / EmissionRate;
+
+        // Emit particles
+        for (int i = 0; i < particleCount; i++)
         {
-            // Reset timer, keeping the fractional part for next frame
-            EmissionTimer -= particleCount / EmissionRate;
+            // Generate random velocity using normal distribution
+            float randomAngle = (float)(random.NextDouble() * 2.0 * Math.PI);
 
-            // Emit particles
-            for (int i = 0; i < particleCount; i++)
-            {
-                // Generate random velocity using normal distribution
-                float randomAngle = (float)(random.NextDouble() * 2.0 * Math.PI);
+            // Use normal distribution for speed where RandomVelocityMagnitude is 2-sigma
+            // This means 95% of particles will have speed between 0 and RandomVelocityMagnitude
+            float randomSpeed = Math.Abs(NextGaussian(ref HasSpareNormal, ref SpareNormal) * (RandomVelocityMagnitude / 2.0f));
 
-                // Use normal distribution for speed where RandomVelocityMagnitude is 2-sigma
-                // This means 95% of particles will have speed between 0 and RandomVelocityMagnitude
-                float randomSpeed = Math.Abs(NextGaussian(ref HasSpareNormal, ref SpareNormal) * (RandomVelocityMagnitude / 2.0f));
+            float randomVelX = (float)(Math.Cos(randomAngle) * randomSpeed);
+            float randomVelY = (float)(Math.Sin(randomAngle) * randomSpeed);
 
-                float randomVelX = (float)(Math.Cos(randomAngle) * randomSpeed);
-                float randomVelY = (float)(Math.Sin(randomAngle) * randomSpeed);
+            // Combine emitter velocity with random velocity
+            float finalVelX = VelX + randomVelX;
+            float finalVelY = VelY + randomVelY;
 
-                // Combine emitter velocity with random velocity
-                float finalVelX = VelX + randomVelX;
-                float finalVelY = VelY + randomVelY;
+            // Generate random lifetime using Gaussian distribution
+            // Use normal distribution where MaxParticleLifetime is 2-sigma
+            // This means 95% of particles will have lifetime between MinParticleLifetime and (MinParticleLifetime + MaxParticleLifetime)
+            float randomLifetime = Math.Abs(NextGaussian(ref HasSpareNormal, ref SpareNormal) * (MaxParticleLifetime / 2.0f));
+            float particleLifetime = MinParticleLifetime + randomLifetime;
 
-                // Generate random lifetime using Gaussian distribution
-                // Use normal distribution where MaxParticleLifetime is 2-sigma
-                // This means 95% of particles will have lifetime between MinParticleLifetime and (MinParticleLifetime + MaxParticleLifetime)
-                float randomLifetime = Math.Abs(NextGaussian(ref HasSpareNormal, ref SpareNormal) * (MaxParticleLifetime / 2.0f));
-                float particleLifetime = MinParticleLifetime + randomLifetime;
+            // Generate random drag within range
+            float particleDrag = MinParticleDrag +
+                (float)(random.NextDouble() * (MaxParticleDrag - MinParticleDrag));
 
-                // Generate random drag within range
-                float particleDrag = MinParticleDrag +
-                    (float)(random.NextDouble() * (MaxParticleDrag - MinParticleDrag));
-
-                // Create particle at emitter position with combined velocity, individual drag, and specified particle type
-                var createdParticles = ParticleManager.CreateParticles(
-                    1, PosX, PosY, finalVelX, finalVelY, ParticleColor, particleLifetime, particleDrag,
-                    size: initial_particle_size, ParticleType);
-
-                emittedParticles.AddRange(createdParticles);
-            }
+            // Create particle at emitter position with combined velocity, individual drag, and specified particle type
+            var createdParticles = ParticleManager.CreateParticles(
+                1, PosX, PosY, finalVelX, finalVelY, ParticleColor, particleLifetime, particleDrag,
+                size: initial_particle_size, ParticleType);
         }
-
-        return emittedParticles;
     }
 
     public void Kill()
