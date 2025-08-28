@@ -12,7 +12,7 @@ public static class EmitterPresets
 {
     public static void SparkleTrail(this Emitter e)
     {
-        e.Lifetime = 1.7f;                // Short lifetime - just the rocket trail
+        e.initial_lifetime = 1.7f;                // Short lifetime - just the rocket trail
         e.EmissionRate = 150f;            // Emit trail particles
         e.ParticleColor = FireworkColors.Gold;
         e.MinParticleLifetime = 0.6f;
@@ -25,7 +25,7 @@ public static class EmitterPresets
 
     public static void GlitterPop(this Emitter e)
     {
-        e.Lifetime = 0.1f;       // Short sparkle burst
+        e.initial_lifetime = 0.1f;       // Short sparkle burst
         e.EmissionRate = 1000f;   // High emission rate for intense sparkle
         e.ParticleColor = FireworkColors.Gold;
         e.MinParticleLifetime = 0.0f;
@@ -38,7 +38,7 @@ public static class EmitterPresets
 
     public static void Star_1(this Emitter e, int color)
     {
-        e.Lifetime = 1.0f + random_float() * 0.2f;            // Medium lifetime for burst
+        e.initial_lifetime = 1.0f + random_float() * 0.2f;            // Medium lifetime for burst
         e.EmissionRate = 30f;
         e.ParticleColor = color;
         e.MinParticleLifetime = 0.1f;
@@ -51,7 +51,7 @@ public static class EmitterPresets
 
     public static void Fountain(this Emitter e)
     {
-        e.Lifetime = float.MaxValue;     // Infinite lifetime
+        e.initial_lifetime = float.MaxValue;     // Infinite lifetime
         e.EmissionTimer = 0f;
         e.EmissionRate = 100f;           
         e.ParticleColor = FireworkColors.PurpleViolet;
@@ -65,7 +65,7 @@ public static class EmitterPresets
 
     public static void Snowfall(this Emitter e)
     {
-        e.Lifetime = float.MaxValue;     // Infinite lifetime
+        e.initial_lifetime = float.MaxValue;     // Infinite lifetime
         e.EmissionTimer = 0f;
         e.EmissionRate = 50f;            
         e.ParticleColor = FireworkColors.White;

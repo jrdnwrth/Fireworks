@@ -72,12 +72,13 @@ public partial class Particle_Window : Window
         if (activeEmitterCount == 0)
         {
             var ground = 870f;
-            
+
             //Willow.Create(FireworkColors.Gold, 250f, ground, toggle);
-            //Chrysanthemum.Create(FireworkColors.BrightBlue, 350f, ground);
-            //Chrysanthemum.Create(FireworkColors.DeepRed, 400f, ground);
-            //Chrysanthemum.Create(FireworkColors.BrightGreen, 500f, ground);
-            Palm.Create(FireworkColors.Gold, 450f, ground);
+            Chrysanthemum.Create(FireworkColors.BrightBlue, 350f, ground, toggle);
+            Chrysanthemum2.Create(FireworkColors.BrightBlue, 350f, ground, toggle);
+            //Chrysanthemum.Create(FireworkColors.DeepRed, 400f, ground, toggle);
+            //Chrysanthemum.Create(FireworkColors.BrightGreen, 500f, ground, toggle);
+            //Palm.Create(FireworkColors.Gold, 450f, ground, !toggle);
             toggle = !toggle;
 
         }

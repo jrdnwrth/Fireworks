@@ -18,7 +18,7 @@ public static partial class Willow
         e.EmissionRate = 150f;
         e.initial_particle_size = 6f;
         e.ParticleType = ParticleType.Flicker;
-        e.Lifetime = random_float(1.7f, 2.0f);
+        e.initial_lifetime = random_float(1.7f, 2.0f);
         e.OnComplete = (pos, vel) => CreateBurstExplosion(pos, vel, color, flicker); // Chain to burst explosion
     }
 
@@ -33,7 +33,7 @@ public static partial class Willow
             var e = EmitterManager.GetEmitter();
             e.Pos = pos;
             e.SetVelocity_RoundBurst(vel, i, total, 140f, 140f);
-            e.Lifetime = random_float(1.0f, 1.7f);                // Short lifetime - just the rocket trail
+            e.initial_lifetime = random_float(1.0f, 1.7f);                // Short lifetime - just the rocket trail
             e.EmissionTimer = 0f;
             e.EmissionRate = 150f;            // Emit trail particles
             e.ParticleColor = color;
