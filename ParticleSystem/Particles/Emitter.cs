@@ -177,7 +177,7 @@ public class Emitter
         if (sphere_emitter)
         {
             // Convert Emission Rate to layers.
-            var layers = (int)Math.Sqrt(EmissionRate);
+            var layers = (int)EmissionRate/20f;
 
             // Generate each particle.
             foreach ((var x_unit, var y_unit, var z_unit) in generate_unit_sphere(layers))

@@ -61,9 +61,16 @@ public static class MathUtils
         // PI
         var PI = 3.14159265f;
 
+        // We can't have the slices always be perfectly horizontal. So rotate the final result this much.
+        var final_rotation_on_z = random_float(0f, 2f * PI);
+        var final_rotation_on_x = random_float(0f, 2f * PI);
+
         // Iterate through angles off the vertical.
         var total_vertical_radians = PI;
         var distance_between_points = total_vertical_radians / layers;  // This is both the angle (in radians) at the equator between points, and the standard distance between points as measured along the surface of the sphere.
+
+        // Slightly rotate every other slice so they are not perfectly aligned.
+        bool stagger_slices = true;
 
         // Vertical (Y-Axis)
         for (var v = 0f; v < total_vertical_radians; v += distance_between_points)
@@ -80,8 +87,20 @@ public static class MathUtils
             // How many radians is this on a unit circle?
             var step_radians = 2f * PI / total_points;
 
+            // Start to end rotation.
+            var start =  0f;
+            var finish = 2f * PI;
+
+            // Shift half a step_radians if we are staggering slices.
+            stagger_slices = !stagger_slices;
+            if (stagger_slices)
+            {
+                start += step_radians / 2f;
+                finish += step_radians / 2f;
+            }
+
             // Rotate around the horizontal circle
-            for (var h = 0f; h < 2f * PI; h += step_radians)
+            for (var h = start; h < finish; h += step_radians)
             {
                 // Calculate X
                 var x = (float)Math.Cos(h) * slice_radius;
@@ -92,7 +111,15 @@ public static class MathUtils
                 // Calculate Y
                 var y = (float)Math.Cos(v);
 
-                yield return (x, y, z);
+                // Apply final rotation around z.  (These are euler angles, not quaternions.)
+                var x_rotated = (float)(x * Math.Cos(final_rotation_on_z) - y * Math.Sin(final_rotation_on_z));
+                var y_rotated = (float)(x * Math.Sin(final_rotation_on_z) + y * Math.Cos(final_rotation_on_z));
+
+                // Appliy final rotation around x.
+                var y_final = (float)(y_rotated * Math.Cos(final_rotation_on_x) - z * Math.Sin(final_rotation_on_x));
+                var z_final = (float)(y_rotated * Math.Sin(final_rotation_on_x) + z * Math.Cos(final_rotation_on_x));
+
+                yield return (x_rotated, y_final, z_final);
             }
         }
     }

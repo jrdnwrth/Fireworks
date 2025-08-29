@@ -13,7 +13,7 @@ public static partial class Chrysanthemum3
 
         // Set position and velocity using tuple structs
         e.Pos = new Position(xPos, yPos);    // Center horizontally, near bottom
-        e.Vel = new Velocity(random_float(-60f, 60f), -500f + random_float(-60f, 60f));    // Slight horizontal, strong upward velocity
+        e.Vel = new Velocity(random_float(-60f, 60f), -500f + random_float(-90f, 60f));    // Slight horizontal, strong upward velocity
         e.SparkleTrail();                    // Apply preset for rocket trail
         e.EmissionRate = 100f;            // Emit trail particles
         e.initial_lifetime = random_float(1.7f, 2.5f);
@@ -31,7 +31,7 @@ public static partial class Chrysanthemum3
         e.Pos = pos;
         e.Vel = vel;    // Inherit some of the parent velocity
         e.initial_lifetime = 0.04f;       // Short sparkle burst
-        e.EmissionRate = random_float(30f, 400f);   // Not used when sphere_emitter is enabled.
+        e.EmissionRate = random_float(100f, 350f);   // Not used when sphere_emitter is enabled.
         e.ParticleColor = color;
         e.MinParticleLifetime = 0.6f;
         e.MaxParticleLifetime = 0.7f;
