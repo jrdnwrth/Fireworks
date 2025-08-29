@@ -176,8 +176,11 @@ public class Emitter
         // Sphere Emission
         if (sphere_emitter)
         {
+            // Convert Emission Rate to layers.
+            var layers = (int)Math.Sqrt(EmissionRate);
 
-            foreach ((var x_unit, var y_unit) in generate_unit_sphere())
+            // Generate each particle.
+            foreach ((var x_unit, var y_unit, var z_unit) in generate_unit_sphere(layers))
             {
                 float randomSpeed = RandomVelocityMagnitude;
 
@@ -197,7 +200,7 @@ public class Emitter
 
                 // Generate random drag within range
                 float particleDrag = MinParticleDrag +
-                    (float)(random.NextDouble() * (MaxParticleDrag - MinParticleDrag));
+                    (random_float() * (MaxParticleDrag - MinParticleDrag)) + z_unit * 0.012f;
 
                 // Create particle at emitter position with combined velocity, individual drag, and specified particle type
                 var createdParticles = ParticleManager.CreateParticles(

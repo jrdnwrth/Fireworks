@@ -76,7 +76,7 @@ public partial class Particle_Window : Window
             //Willow.Create(FireworkColors.Gold, 250f, ground, toggle);
             ////Chrysanthemum.Create(FireworkColors.BrightBlue, 350f, ground, toggle);
             //Chrysanthemum2.Create(FireworkColors.BrightBlue, 350f, ground, toggle);
-            Chrysanthemum3.Create(FireworkColors.BrightBlue, 350f, ground, toggle);
+            Chrysanthemum3.Create(FireworkColors.BrightBlue, 350f, ground, toggle, toggle);
             //Chrysanthemum.Create(FireworkColors.DeepRed, 400f, ground, toggle);
             //Chrysanthemum.Create(FireworkColors.BrightGreen, 500f, ground, toggle);
             //Palm.Create(FireworkColors.Gold, 450f, ground, !toggle);

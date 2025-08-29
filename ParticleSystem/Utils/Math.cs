@@ -56,7 +56,7 @@ public static class MathUtils
     /// </summary>
     /// <param name="layers">The sphere is built in layers of points.  How many layers should we have?  This controls how many points are returned.</param>
     /// <returns></returns>
-    public static IEnumerable<(float x, float y)> generate_unit_sphere(float layers = 10f)
+    public static IEnumerable<(float x, float y, float z)> generate_unit_sphere(float layers = 10f)
     {
         // PI
         var PI = 3.14159265f;
@@ -92,7 +92,7 @@ public static class MathUtils
                 // Calculate Y
                 var y = (float)Math.Cos(v);
 
-                yield return (x, y);
+                yield return (x, y, z);
             }
         }
     }

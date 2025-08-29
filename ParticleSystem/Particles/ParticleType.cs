@@ -28,6 +28,11 @@ namespace ParticleSystem.Particles
         /// <summary>
         /// No change to particle size over its lifetime.
         /// </summary>
-        FixedSize = 4
+        FixedSize = 4,
+
+        /// <summary>
+        /// Decays faster near the end of its lifetime, following a hemisphere curve.
+        /// </summary>
+        DecayHemisphere = 5,
     }
 }

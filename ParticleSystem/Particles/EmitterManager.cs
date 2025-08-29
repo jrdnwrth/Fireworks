@@ -78,8 +78,6 @@ public static class EmitterManager
             var emitter = _emitters[i];
             if (emitter == null) continue;
 
-
-
             if (emitter.IsAlive)
             {
                 emitter.Update(deltaTime, window_height);

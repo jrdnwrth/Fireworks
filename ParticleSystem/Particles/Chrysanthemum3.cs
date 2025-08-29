@@ -6,7 +6,7 @@ namespace ParticleSystem.Particles;
 
 public static partial class Chrysanthemum3
 {
-    public static void Create(int color, float xPos, float yPos, bool splitter_finish)
+    public static void Create(int color, float xPos, float yPos, bool splitter_finish, bool glitter)
     {
         // Get an emitter from the pool instead of creating new one
         var e = EmitterManager.GetEmitter();
@@ -18,29 +18,36 @@ public static partial class Chrysanthemum3
         e.EmissionRate = 100f;            // Emit trail particles
         e.initial_lifetime = random_float(1.7f, 2.5f);
 
-        e.OnComplete = (pos, vel) => CreateSparkleEffect(pos, vel, color, splitter_finish); // Chain to burst explosion
+        e.OnComplete = (pos, vel) => CreateBurst(pos, vel, color, splitter_finish, glitter); // Chain to burst explosion
     }
-
 
     /// <summary>
     /// Stage 3: Creates sparkle effects at each burst emitter's final position
     /// </summary>
-    private static void CreateSparkleEffect(Position pos, Velocity vel, int color, bool splitter_finish)
+    private static void CreateBurst(Position pos, Velocity vel, int color, bool splitter_finish, bool glitter)
     {
         // Create a final sparkle burst
         var e = EmitterManager.GetEmitter();
         e.Pos = pos;
         e.Vel = vel;    // Inherit some of the parent velocity
         e.initial_lifetime = 0.04f;       // Short sparkle burst
-        e.EmissionRate = 100f;   // Not used when sphere_emitter is enabled.
+        e.EmissionRate = random_float(30f, 400f);   // Not used when sphere_emitter is enabled.
         e.ParticleColor = color;
-        e.MinParticleLifetime = 0.4f;
-        e.MaxParticleLifetime = 0.5f;
-        e.RandomVelocityMagnitude = 480f;
-        e.MinParticleDrag = 0.94f;
-        e.MaxParticleDrag = 0.97f;
-        e.initial_particle_size = 20;
-        e.ParticleType = ParticleType.Decay;
+        e.MinParticleLifetime = 0.6f;
+        e.MaxParticleLifetime = 0.7f;
+        e.RandomVelocityMagnitude = 230f;
+        e.MinParticleDrag = 0.98f;
+        e.MaxParticleDrag = 0.985f;
+        if (glitter)
+        {
+            e.initial_particle_size = 12;
+            e.ParticleType = ParticleType.Flicker;
+        }
+        else
+        {
+            e.initial_particle_size = 9;
+            e.ParticleType = ParticleType.DecayHemisphere;
+        }
         e.decay_particle_velocity_by = 0.0f;  // Probably doesn't do anything.
         e.sphere_emitter = true;
     }

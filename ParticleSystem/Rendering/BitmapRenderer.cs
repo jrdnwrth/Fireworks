@@ -127,6 +127,7 @@ public unsafe class BitmapRenderer
         {
             ParticleType.FixedSize => originalSize,
             ParticleType.Decay => CalculateDecaySize(originalSize, lifetimeProgress),
+            ParticleType.DecayHemisphere => CalculateDecayHemisphereSize(originalSize, lifetimeProgress),
             ParticleType.Strobe => CalculateStrobeSize(originalSize, lifetimeProgress),
             ParticleType.Flicker => CalculateFlickerSize(originalSize, lifetimeProgress),
             ParticleType.Flash => CalculateFlashSize(originalSize, lifetimeProgress),
@@ -141,7 +142,11 @@ public unsafe class BitmapRenderer
         // We want size to decrease linearly with remaining lifetime
         return originalSize * lifetimeProgress;
     }
-    
+    private static float CalculateDecayHemisphereSize(float originalSize, float lifetimeProgress)
+    {
+        return originalSize * (float)Math.Cos(1f-lifetimeProgress);
+    }
+
     private float CalculateStrobeSize(float originalSize, float lifetimeProgress)
     {
         // Strobe: Particle that oscillates between size 0 and its initial size
