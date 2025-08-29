@@ -50,5 +50,25 @@ public static partial class Chrysanthemum3
         }
         e.decay_particle_velocity_by = 0.0f;  // Probably doesn't do anything.
         e.sphere_emitter = true;
+        if(splitter_finish)
+            e.OnEachParticleComplete = (pos, vel) => CreateSplitEffect(pos, vel, color);
+    }
+
+    private static void CreateSplitEffect(Position pos, Velocity vel, int color)
+    {
+        // Create a final sparkle burst
+        var e = EmitterManager.GetEmitter();
+        e.Pos = pos;
+        e.Vel = vel;                    // Inherit some of the parent velocity
+        e.initial_lifetime = 0.04f;      // Short sparkle burst
+        e.EmissionRate = 50f;           // High emission rate for intense sparkle
+        e.ParticleColor = color;
+        e.MinParticleLifetime = 0.1f;
+        e.MaxParticleLifetime = 0.5f;
+        e.RandomVelocityMagnitude = 550f;
+        e.initial_particle_size = 7;
+        e.MinParticleDrag = 0.8f;
+        e.MaxParticleDrag = 0.9f;
+        e.ParticleType = ParticleType.Decay;
     }
 }

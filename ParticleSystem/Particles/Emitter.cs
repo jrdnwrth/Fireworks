@@ -70,6 +70,7 @@ public class Emitter
     /// Callback function to invoke when the emitter completes its lifetime
     /// </summary>
     public OnCompleteCallback? OnComplete { get; set; }
+    public OnCompleteCallback? OnEachParticleComplete { get; set; }
 
     /// <summary>
     /// This is called by the EmitterManager when reusing an emitter from the pool.
@@ -101,6 +102,7 @@ public class Emitter
         SpareNormal = 0f;
         CallbackInvoked = false;
         OnComplete = null;
+        OnEachParticleComplete = null;
     }
 
     public void Update(float deltaTime, int window_height)
@@ -172,7 +174,7 @@ public class Emitter
         if (decay_particle_size)
             adjusted_particle_size = initial_particle_size * lifetime_left;
 
-        // TODO: This is redundant.
+        // TODO: This is very redundant.
         // Sphere Emission
         if (sphere_emitter)
         {
@@ -203,9 +205,9 @@ public class Emitter
                     (random_float() * (MaxParticleDrag - MinParticleDrag)) + z_unit * 0.012f;
 
                 // Create particle at emitter position with combined velocity, individual drag, and specified particle type
-                var createdParticles = ParticleManager.CreateParticles(
+                ParticleManager.CreateParticles(
                     1, PosX, PosY, finalVelX, finalVelY, ParticleColor, particleLifetime, particleDrag,
-                    size: adjusted_particle_size, ParticleType);
+                    size: adjusted_particle_size, ParticleType, onComplete: OnEachParticleComplete);
             }
 
             // Expire the emitter.
@@ -247,9 +249,9 @@ public class Emitter
                 (float)(random.NextDouble() * (MaxParticleDrag - MinParticleDrag));
 
             // Create particle at emitter position with combined velocity, individual drag, and specified particle type
-            var createdParticles = ParticleManager.CreateParticles(
+            ParticleManager.CreateParticles(
                 1, PosX, PosY, finalVelX, finalVelY, ParticleColor, particleLifetime, particleDrag,
-                size: adjusted_particle_size, ParticleType);
+                size: adjusted_particle_size, ParticleType, onComplete: OnEachParticleComplete);
         }
     }
 

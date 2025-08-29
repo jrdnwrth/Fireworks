@@ -84,8 +84,7 @@ namespace ParticleSystem.Particles
 
                         //if (_posX[i] < 0) { _posX[i] = 0; _velX[i] = -_velX[i] * 0.8f; }
                         //else if (_posX[i] > _screenWidth - 1) { _posX[i] = _screenWidth - 1; _velX[i] = -_velX[i] * 0.8f; }
-
-                        if (_posY[i] < 0) { _posY[i] = 0; _velY[i] = -_velY[i] * 0.8f; }
+                        //if (_posY[i] < 0) { _posY[i] = 0; _velY[i] = -_velY[i] * 0.8f; }
                     }
                 }
             }
@@ -131,13 +130,13 @@ namespace ParticleSystem.Particles
             return IsInitialized && index >= 0 && index < ParticleCount && _lifetime[index] > 0;
         }
         
-        public static List<Particle> CreateParticles(int count, float posX, float posY, float velX, float velY, int colorArgb, 
+        public static void CreateParticles(int count, float posX, float posY, float velX, float velY, int colorArgb, 
             float lifetime, float? drag = null, float? size = null, 
             ParticleType particleType = ParticleType.Decay, OnCompleteCallback? onComplete = null)
         {
-            if (!IsInitialized) return new List<Particle>();
+            if (!IsInitialized) 
+                return;
             
-            var createdParticles = new List<Particle>();
             int created = 0;
             
             // Use default drag if not specified
@@ -161,12 +160,9 @@ namespace ParticleSystem.Particles
                     _type[i] = (byte)particleType; // Set individual particle type
                     _callbacks[i] = onComplete; // Set callback for this particle
                     
-                    createdParticles.Add(new Particle(i, onComplete));
                     created++;
                 }
             }
-            
-            return createdParticles;
         }
         
         public static void DeleteParticle(Particle? particle)
