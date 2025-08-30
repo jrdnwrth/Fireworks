@@ -31,10 +31,10 @@ public static partial class Chrysanthemum3
         e.Pos = pos;
         e.Vel = vel;    // Inherit some of the parent velocity
         e.initial_lifetime = 0.04f;       // Short sparkle burst
-        e.EmissionRate = random_float(100f, 350f);   // Not used when sphere_emitter is enabled.
+        e.EmissionRate = random_float(200f, 350f);   // Not used when sphere_emitter is enabled.
         e.ParticleColor = color;
-        e.MinParticleLifetime = 0.6f;
-        e.MaxParticleLifetime = 0.7f;
+        e.MinParticleLifetime = 0.65f;
+        e.MaxParticleLifetime = 0.65f;
         e.RandomVelocityMagnitude = 230f;
         e.MinParticleDrag = 0.98f;
         e.MaxParticleDrag = 0.985f;
@@ -61,7 +61,7 @@ public static partial class Chrysanthemum3
         e.Pos = pos;
         e.Vel = vel;                    // Inherit some of the parent velocity
         e.initial_lifetime = 0.04f;      // Short sparkle burst
-        e.EmissionRate = 50f;           // High emission rate for intense sparkle
+        e.EmissionRate = 100f;           // High emission rate for intense sparkle
         e.ParticleColor = color;
         e.MinParticleLifetime = 0.1f;
         e.MaxParticleLifetime = 0.5f;

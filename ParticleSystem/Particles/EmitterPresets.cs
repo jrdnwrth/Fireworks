@@ -53,12 +53,12 @@ public static class EmitterPresets
     {
         e.initial_lifetime = float.MaxValue;     // Infinite lifetime
         e.EmissionTimer = 0f;
-        e.EmissionRate = 100f;           
+        e.EmissionRate = 100f;
         e.ParticleColor = FireworkColors.PurpleViolet;
         e.MinParticleLifetime = 1.0f;
         e.MaxParticleLifetime = 2.0f;
-        e.RandomVelocityMagnitude = 50f; 
-        e.MinParticleDrag = 0.9f;        
+        e.RandomVelocityMagnitude = 50f;
+        e.MinParticleDrag = 0.9f;
         e.MaxParticleDrag = 0.95f;
         e.ParticleType = ParticleType.Decay;
     }
@@ -67,12 +67,12 @@ public static class EmitterPresets
     {
         e.initial_lifetime = float.MaxValue;     // Infinite lifetime
         e.EmissionTimer = 0f;
-        e.EmissionRate = 50f;            
+        e.EmissionRate = 50f;
         e.ParticleColor = FireworkColors.White;
-        e.MinParticleLifetime = 5.0f;    
+        e.MinParticleLifetime = 5.0f;
         e.MaxParticleLifetime = 10.0f;
-        e.RandomVelocityMagnitude = 10f; 
-        e.MinParticleDrag = 0.98f;       
+        e.RandomVelocityMagnitude = 10f;
+        e.MinParticleDrag = 0.98f;
         e.MaxParticleDrag = 0.99f;
         e.ParticleType = ParticleType.Decay;
     }
@@ -86,4 +86,12 @@ public static class EmitterPresets
         float burstVelY = (float)(Math.Sin(angle) * speedY * circular_scaler) + parentVel.Y;  // Inherit parent velocity
         e.Vel = new Velocity(burstVelX, burstVelY);
     }
+    //public static void SetVelocity_SphereBurst(this Emitter e, Velocity parentVel, int i, int total_count, float speedX, float speedY)
+    //{
+
+    //    (var x, var y) = MathUtils.generate_unit_sphere(total_count / 20f);
+    //    float burstVelX = (float)(Math.Cos(angle) * speedX * circular_scaler) + parentVel.X;  // Inherit parent velocity
+    //    float burstVelY = (float)(Math.Sin(angle) * speedY * circular_scaler) + parentVel.Y;  // Inherit parent velocity
+    //    e.Vel = new Velocity(burstVelX, burstVelY);
+    //}
 }
