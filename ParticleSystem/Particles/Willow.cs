@@ -13,7 +13,7 @@ public static partial class Willow
 
         // Set position and velocity using tuple structs
         e.Pos = new Position(xPos, yPos);    // Center horizontally, near bottom
-        e.Vel = new Velocity(random_float(-60f, 60f),  random_float(-500f, -530f));    // Slight horizontal, strong upward velocity
+        e.Vel = new Velocity(random_float(-60f, 60f), random_float(-500f, -530f));    // Slight horizontal, strong upward velocity
         e.SparkleTrail();                    // Apply preset for rocket trail
         e.EmissionRate = 150f;
         e.initial_particle_size = 6f;

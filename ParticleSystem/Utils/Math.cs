@@ -20,6 +20,12 @@ public static class MathUtils
     public static float random_float(float min, float max) => min + (random_float() * (max - min));
 
     /// <summary>
+    /// Generates a random boolean value (true or false).
+    /// </summary>
+    /// <returns>A random boolean value</returns>
+    public static bool random_bool() => random.Next(2) == 1;
+
+    /// <summary>
     /// Generates a normally distributed random number using the Box-Muller transform.
     /// Maintains state for spare normal value.
     /// </summary>

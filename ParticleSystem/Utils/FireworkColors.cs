@@ -48,9 +48,7 @@ public static class FireworkColors
     {
         int[] allColors = 
         {
-            BrightRed, BrightBlue, BrightGreen, Gold,
-            PurpleViolet, Orange, HotPink, White, Silver, Copper,
-            ElectricBlue, LimeGreen, DeepRed, ChampagneGold
+            BrightRed, BrightBlue, BrightGreen,
         };
         return allColors[random.Next(allColors.Length)];
     }
